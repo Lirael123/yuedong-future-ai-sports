@@ -30,6 +30,7 @@ jobs:
       - run: npm ci
       - run: npm run type-check
       - run: npm run test:yuedong
+      - run: npm run test:mediapipe
       - run: npm run test:coze
       - run: npm run build
       - name: Prepare browser checks without changing the lockfile

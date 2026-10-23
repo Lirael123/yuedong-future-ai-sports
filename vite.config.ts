@@ -18,8 +18,12 @@ export default defineConfig(({ mode }) => {
   if (!/^\/(?:[A-Za-z0-9_-]+\/)*$/.test(base)) {
     throw new Error("VITE_BASE_PATH must be / or an absolute path such as /yuedong-future-ai-sports/.");
   }
+  const mediapipeVersion = JSON.parse(fs.readFileSync("./node_modules/@mediapipe/tasks-vision/package.json", "utf8")).version;
 
   return {
+  define: {
+    "import.meta.env.VITE_MEDIAPIPE_ASSET_VERSION": JSON.stringify(mediapipeVersion),
+  },
   plugins: [
     react(),
     VitePWA({
@@ -55,6 +59,15 @@ export default defineConfig(({ mode }) => {
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         runtimeCaching: [
+          {
+            urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.includes("/mediapipe/"),
+            handler: "CacheFirst",
+            options: {
+              cacheName: `mediapipe-runtime-${mediapipeVersion}-pose-lite-v1`,
+              expiration: { maxEntries: 8, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
           {
             urlPattern: /^https:\/\/storage\.googleapis\.com\/mediapipe-models\//,
             handler: "CacheFirst",

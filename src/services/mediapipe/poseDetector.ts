@@ -15,50 +15,69 @@ export interface PoseResults {
 class PoseDetectorService {
   private poseLandmarker: PoseLandmarker | null = null;
   private isInitialized = false;
-  private isInitializing = false;
+  private initialization: Promise<void> | null = null;
   private lastVideoTime = -1;
 
   async initialize(): Promise<void> {
-    if (this.isInitialized || this.isInitializing) {
-      return;
+    if (this.isInitialized) return;
+    if (!this.initialization) {
+      this.initialization = this.createDetector().finally(() => { this.initialization = null; });
     }
+    return this.initialization;
+  }
 
-    this.isInitializing = true;
-
+  private async createDetector(): Promise<void> {
+    const base = import.meta.env.BASE_URL + 'mediapipe/';
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let expired = false;
     try {
-      // Try a simpler CDN approach with the specific version that works
-      const vision = await FilesetResolver.forVisionTasks(
-        'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.8/wasm'
-      );
-
-      // Add timeout to prevent hanging
-      const createPoseLandmarker = PoseLandmarker.createFromOptions(vision, {
-        baseOptions: {
-          modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task',
-          delegate: 'GPU'
-        },
-        runningMode: 'VIDEO',
-        numPoses: 1,
-        minPoseDetectionConfidence: 0.5,  // Match extraction tool settings
-        minPosePresenceConfidence: 0.5,   // Match extraction tool settings
-        minTrackingConfidence: 0.5,       // Match extraction tool settings
-        outputSegmentationMasks: false
+      // Copy WASM from the exact installed JS package, avoiding mixed CDN versions.
+      const create = async () => {
+        const vision = await FilesetResolver.forVisionTasks(
+          base + 'runtime/' + import.meta.env.VITE_MEDIAPIPE_ASSET_VERSION
+        );
+        if (expired) throw new Error('MediaPipe initialization expired');
+        const options = (delegate: 'GPU' | 'CPU') => ({
+          baseOptions: {
+            modelAssetPath: base + 'pose_landmarker_lite.task',
+            delegate
+          },
+          runningMode: 'VIDEO' as const,
+          numPoses: 1,
+          minPoseDetectionConfidence: 0.5,  // Match extraction tool settings
+          minPosePresenceConfidence: 0.5,   // Match extraction tool settings
+          minTrackingConfidence: 0.5,       // Match extraction tool settings
+          outputSegmentationMasks: false
+        });
+        let detector: PoseLandmarker;
+        try {
+          detector = await PoseLandmarker.createFromOptions(vision, options('GPU'));
+        } catch {
+          if (expired) throw new Error('MediaPipe initialization expired');
+          detector = await PoseLandmarker.createFromOptions(vision, options('CPU'));
+        }
+        if (expired) {
+          detector.close();
+          throw new Error('MediaPipe initialization expired');
+        }
+        return detector;
+      };
+      const timeout = new Promise<never>((_, reject) => {
+        timer = setTimeout(() => {
+          expired = true;
+          reject(new Error('人体姿态识别加载超时，请检查网络后重试。'));
+        }, 30000);
       });
-      
-      // Add 30 second timeout
-      const timeoutPromise = new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error('MediaPipe initialization timeout (30s)')), 30000)
-      );
-      
-      this.poseLandmarker = await Promise.race([createPoseLandmarker, timeoutPromise]) as PoseLandmarker;
+      this.poseLandmarker = await Promise.race([create(), timeout]);
 
       this.isInitialized = true;
     } catch (error) {
       // Failed to initialize MediaPipe Pose Landmarker
       this.isInitialized = false;
-      throw error;
+      console.error('MediaPipe initialization failed', error);
+      throw new Error('人体姿态识别未能加载，请检查网络或更换支持视频分析的浏览器后重试。');
     } finally {
-      this.isInitializing = false;
+      if (timer !== undefined) clearTimeout(timer);
     }
   }
 
