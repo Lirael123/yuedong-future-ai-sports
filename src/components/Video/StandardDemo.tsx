@@ -21,17 +21,17 @@ export default function StandardDemo(){
       在哔哩哔哩观看 ↗
     </a>
    </div>
-   <div className="aspect-video relative rounded-xl overflow-hidden bg-slate-900">
-    <iframe
-      title="立定跳远中文标准动作教学视频"
-      src={PLAYER_URL}
-      className="absolute inset-0 h-full w-full border-0"
-      loading="lazy"
+   <details className="rounded-xl border border-emerald-100 bg-emerald-50/40">
+    <summary className="cursor-pointer px-4 py-3 text-sm font-semibold text-emerald-800">
+      展开中文教练讲解（约 3 分钟）
+    </summary>
+    <div className="relative aspect-video max-w-[780px] mx-3 mb-3 rounded-xl overflow-hidden bg-slate-900">
+     <iframe title="立定跳远中文标准动作教学视频" src={PLAYER_URL}
+      className="absolute inset-0 h-full w-full border-0" loading="lazy"
       allow="fullscreen; picture-in-picture; encrypted-media"
-      allowFullScreen
-      referrerPolicy="strict-origin-when-cross-origin"
-    />
-   </div>
+      allowFullScreen referrerPolicy="strict-origin-when-cross-origin"/>
+    </div>
+   </details>
    <div className="grid grid-cols-4 gap-2 mt-4">
     {['预摆协调','蹬地起跳','腾空收腿','落地缓冲'].map((step,i)=>
       <div key={step} className="rounded-lg bg-emerald-50 border border-emerald-100 px-1 py-2 text-center">
@@ -40,7 +40,7 @@ export default function StandardDemo(){
       </div>
     )}
    </div>
-   <p className="text-xs text-slate-500 mt-3">教学视频在本站直接播放；如播放受地区或站外限制，可点击“在哔哩哔哩观看”。上方固定动作示意为算法参考模板，无须另选标准视频；学生视频由本人上传分析。</p>
+   <p className="text-xs text-slate-500 mt-3">中文讲解可以展开观看；若站外播放器受限，可点击“在哔哩哔哩观看”。上方固定动作示意为算法参考模板，无须另选标准视频；学生视频由本人上传分析。</p>
   </section>
  )
 }
