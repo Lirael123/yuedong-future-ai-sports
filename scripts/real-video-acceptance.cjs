@@ -42,19 +42,26 @@ async function main(){
   // The fixed reference markers must be prefilled; the user should only mark steps 3 and 4.
   await page.getByText('第 3 步，共 4 步').waitFor({timeout:10000});
   report.checks.referenceMarkersSkipped=true;
-  const control=wizard.getByRole('button',{name:'▶'});
   const marker=wizard.getByRole('button',{name:'确认标记此帧'});
-  const steps=Math.max(12,Math.min(40,Math.floor(duration*30*.22)));
-  for(let i=0;i<steps;i++) await control.click();
-  const takeoffTime=await wizard.locator('video').evaluate(v=>v.currentTime);
+  const slider=wizard.getByRole('slider',{name:'调整视频关键帧'});
+  async function chooseFrame(target) {
+    await slider.waitFor({state:'visible',timeout:10000});
+    await slider.focus();
+    await slider.press('Home');
+    for(let i=0;i<target;i++) await slider.press('ArrowRight');
+    await page.waitForFunction(frame=>{
+      const v=document.querySelector('.fixed.inset-0 video');
+      return v && Number.isFinite(v.currentTime) && Math.abs(v.currentTime-frame/30)<.13;
+    },target,{timeout:15000});
+    return wizard.locator('video').evaluate(v=>v.currentTime);
+  }
+  const takeoffFrame=Math.max(12,Math.min(36,Math.floor(duration*30*.28)));
+  const takeoffTime=await chooseFrame(takeoffFrame);
   await marker.click();
   await page.getByText('第 4 步，共 4 步').waitFor({timeout:10000});
-  const extra=Math.max(15,Math.min(65,Math.floor(duration*30*.42)));
-  for(let i=0;i<extra;i++) {
-    if(await control.isDisabled())break;
-    await control.click();
-  }
-  const landingTime=await wizard.locator('video').evaluate(v=>v.currentTime);
+  const landingFrame=Math.max(takeoffFrame+16,Math.min(Math.floor(duration*30)-2,Math.floor(duration*30*.70)));
+  const landingTime=await chooseFrame(landingFrame);
+  assert.ok(landingTime>takeoffTime+0.15,'landing frame must be later than takeoff');
   await marker.click();
   await wizard.waitFor({state:'hidden',timeout:10000});
   report.markerTimes={takeoff:takeoffTime,landing:landingTime};
@@ -70,6 +77,8 @@ async function main(){
       label.includes('视频分析失败')||label.includes('等待有效分析')&&!label.includes('视频分析中') && label.includes('导出分析视频');
   },null,{timeout});
   const body=await page.locator('body').innerText();
+  report.visibleAfterAnalysis=body.slice(0,3200);
+  report.observations.push('Control label after analysis: '+(await page.locator('button').allTextContents()).filter(x=>/分析|导出|标记/.test(x)).join('|').slice(0,250));
   const good=body.includes('已完成关键点分析');
   const insufficient=body.includes('关键姿态帧不足');
   report.checks.videoAnalysisFinished=good||insufficient;
