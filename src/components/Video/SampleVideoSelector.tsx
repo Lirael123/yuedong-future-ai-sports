@@ -7,7 +7,7 @@ interface SampleVideo {
   title: string;
   description: string;
   jumpType: string;
-  次旋转: number;
+  rotations: number;
   markers: {
     takeoff: {
       frame: number;
