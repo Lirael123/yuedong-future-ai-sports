@@ -43,7 +43,7 @@ export default function VideoUploadMenu({
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-white font-medium group-hover:text-ice-blue-400 transition-colors">
-                    Choose from Library
+                    从设备选择视频
                   </h3>
                   <p className="text-gray-400 text-sm mt-1">
                     请选择经授权的完整侧面跳远视频
@@ -65,7 +65,7 @@ export default function VideoUploadMenu({
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-white font-medium group-hover:text-ice-blue-400 transition-colors">
-                      Record New Video
+                      拍摄新视频
                     </h3>
                     <p className="text-gray-400 text-sm mt-1">
                       拍摄一段立定跳远视频
