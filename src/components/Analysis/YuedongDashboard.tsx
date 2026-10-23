@@ -70,7 +70,7 @@ export default function YuedongDashboard(){
  };
  return <section className="text-slate-100 space-y-5 pb-8" aria-label="跃动未来训练闭环">
    <div className="rounded-2xl border border-emerald-800/60 bg-gradient-to-br from-slate-900 to-emerald-950/50 p-5 space-y-2">
-     <p className="text-xs tracking-[0.2em] font-semibold text-emerald-300">STANDING LONG JUMP · TEACHING ASSISTANT</p>
+     <p className="text-xs tracking-[0.2em] font-semibold text-emerald-300">立定跳远 · AI教学辅助</p>
      <h2 className="text-xl md:text-2xl font-semibold">跃动未来 · 立定跳远精准学练</h2>
      <p className="text-sm text-slate-300">标准示范 → 学生动作 → 关键帧对齐 → 姿态反馈 → 分层训练 → 成长记录</p>
      <p className="text-xs text-slate-400">请准备相近机位、相同方向且经授权拍摄的完整侧面视频。视频分析仍使用原工程的 MediaPipe 骨架识别。</p>
@@ -82,7 +82,7 @@ export default function YuedongDashboard(){
      </div>
      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
        {phaseOrder.map((phase,i)=><div key={phase} className="rounded-lg border border-slate-700 bg-slate-900/90 p-3">
-         <div className="text-xs text-emerald-400">STEP {i+1}</div>
+         <div className="text-xs text-emerald-400">阶段 {i+1}</div>
          <div className="text-sm mt-1">{phaseNames[phase]}</div>
          <div className="text-xl mt-2 font-semibold tabular-nums">{report.phases[phase]?.knee!==undefined ? report.phases[phase]!.knee.toFixed(1)+'°':'—'}</div>
          <p className="text-xs text-slate-400">视频估算膝角</p>
