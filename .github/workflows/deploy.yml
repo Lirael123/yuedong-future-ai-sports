@@ -27,7 +27,7 @@ jobs:
         run: npm run test:yuedong
       - name: Generate fixed authored reference video
         run: |
-          python3 -m pip install --quiet pillow
+          python3 -m pip install --quiet pillow imageio-ffmpeg
           python3 scripts/generate-standard-reference.py
       - name: Build
         run: npm run build
@@ -77,7 +77,7 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Generate fixed authored reference video
         run: |
-          python3 -m pip install --quiet pillow
+          python3 -m pip install --quiet pillow imageio-ffmpeg
           python3 scripts/generate-standard-reference.py
       - name: Build preview
         run: npm run build
