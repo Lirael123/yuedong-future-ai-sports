@@ -15,28 +15,28 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      base: "/feedback-loop/",
+      base: "/yuedong-future-ai-sports/",
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "Logo1.png", "Logo2.png", "android-chrome-192x192.png", "android-chrome-512x512.png"],
       manifest: {
-        name: "Feedback Loop - Figure Skating Jump Analyzer",
-        short_name: "Feedback Loop",
-        description: "AI-powered figure skating jump analysis and technique improvement",
-        theme_color: "#5dade2",
+        name: "跃动未来 · 立定跳远教学系统",
+        short_name: "跃动未来",
+        description: "AI-assisted standing long jump analysis, tiered practice and progress tracking",
+        theme_color: "#064e3b",
         background_color: "#1f2937",
         display: "standalone",
-        scope: "/feedback-loop/",
-        start_url: "/feedback-loop/",
+        scope: "/yuedong-future-ai-sports/",
+        start_url: "/yuedong-future-ai-sports/",
         orientation: "portrait-primary",
         categories: ["sports", "education", "productivity"],
         icons: [
           {
-            src: "/feedback-loop/android-chrome-192x192.png",
+            src: "/yuedong-future-ai-sports/android-chrome-192x192.png",
             sizes: "192x192",
             type: "image/png",
             purpose: "any maskable"
           },
           {
-            src: "/feedback-loop/android-chrome-512x512.png",
+            src: "/yuedong-future-ai-sports/android-chrome-512x512.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "any maskable"
@@ -76,7 +76,7 @@ export default defineConfig({
       }
     })
   ],
-  base: process.env.NODE_ENV === "production" ? "/feedback-loop/" : "/",
+  base: process.env.NODE_ENV === "production" ? "/yuedong-future-ai-sports/" : "/",
   server: {
     https: useLocalHttps
       ? {
