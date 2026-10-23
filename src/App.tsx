@@ -279,21 +279,17 @@ function App() {
         <OfflineIndicator />
 
         {/* Video Section - Responsive height for better use of space */}
-        <div className="h-[245px] md:h-[330px] p-3 md:p-5 grid grid-cols-1 md:grid-cols-2 gap-3 mb-2 auto-rows-fr">
-          <VideoContainer
-            label="固定标准动作 · V1"
-            type="reference"
-            showCloseButton={false}
-            onVideoRemoved={handleVideoRemoved}
-            onSampleVideoLoading={setIsLoadingSampleVideos}
-          />
-          <VideoContainer
-            label="学生动作视频"
-            type="user"
-            onVideoUploaded={handleUserVideoUpload}
-            onVideoRemoved={handleVideoRemoved}
-            onSampleVideoLoading={setIsLoadingSampleVideos}
-          />
+        <div className="p-3 md:p-5 grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+          <div className="h-[230px] md:h-[310px]">
+            <VideoContainer label="固定标准动作 · V1" type="reference"
+              showCloseButton={false} onVideoRemoved={handleVideoRemoved}
+              onSampleVideoLoading={setIsLoadingSampleVideos}/>
+          </div>
+          <div className="h-[230px] md:h-[310px]">
+            <VideoContainer label="学生动作视频" type="user"
+              onVideoUploaded={handleUserVideoUpload} onVideoRemoved={handleVideoRemoved}
+              onSampleVideoLoading={setIsLoadingSampleVideos}/>
+          </div>
         </div>
 
         {/* Display Mode Toggle */}
