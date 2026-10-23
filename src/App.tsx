@@ -22,7 +22,6 @@ function App() {
     referenceVideo,
     userVideo,
     hasValidAnalysis,
-    setReferenceVideo,
     setUserVideo,
     userMetrics,
     userAnalysis,
