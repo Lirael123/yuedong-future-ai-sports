@@ -85,7 +85,7 @@ export default function YuedongDashboard(){
      <p className="text-xs text-slate-400">系统使用固定动作示意模板辅助对比学生姿态关键点。请使用经授权拍摄、全身入镜的侧面视频。</p>
    </div>
    <StandardDemo />
-   <section className={card+' p-4 space-y-3'} aria-label="动作诊断">
+   <section className={card+' p-4 space-y-3'} id="jump-diagnosis" aria-label="动作诊断">
      <div className="flex flex-wrap items-center justify-between gap-2">
        <h3 className="font-semibold text-lg">01 · 动作诊断</h3>
        <span className="text-xs text-emerald-300">{report.status==='ready'?'已完成关键点分析':'等待有效分析'}</span>
