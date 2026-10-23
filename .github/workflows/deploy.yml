@@ -58,3 +58,41 @@ jobs:
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       id: deployment
       uses: actions/deploy-pages@v4
+  smoke-browser:
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/feature/yuedong-integrated-v1'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install browser for acceptance smoke test
+        run: |
+          npm install --no-save playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Build preview
+        run: npm run build
+        env:
+          NODE_ENV: production
+      - name: Browser checks
+        run: |
+          npm run preview -- --host 127.0.0.1 > /tmp/preview.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/yuedong-future-ai-sports/ > /dev/null; then break; fi
+            sleep 1
+          done
+          node scripts/smoke-browser.cjs
+      - name: Upload verification screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: yuedong-browser-preview
+          path: smoke-*.png
+          if-no-files-found: ignore
