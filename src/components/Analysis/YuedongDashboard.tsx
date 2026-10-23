@@ -1,6 +1,7 @@
 import {useMemo,useState} from 'react';
 import {useAnalysisStore} from '../../store/analysisStore';
 import CoachPanel from './CoachPanel';
+import StandardDemo from '../Video/StandardDemo';
 import {analyzeLongJump,planFor,cleanId,loadRecords,parseCentimeters,toCsv,RECORDS_KEY,
  type Phase,type Tier,type RecordEntry,type Report} from '../../logic/yuedong';
 
@@ -16,7 +17,7 @@ function numericBars(items:RecordEntry[]) {
  return items.filter(r=>r.measuredCm!==null && r.measuredCm!==undefined)
   .sort((a,b)=>a.date.localeCompare(b.date)).slice(-8);
 }
-const card='rounded-xl border border-slate-700 bg-slate-950/50';
+const card='rounded-xl border border-slate-200 bg-white shadow-sm';
 const button='rounded-lg px-4 py-2 text-sm font-semibold transition-colors';
 export default function YuedongDashboard(){
  const {referenceAnalysis,userAnalysis,referenceMetrics,userMetrics}=useAnalysisStore();
@@ -68,13 +69,14 @@ export default function YuedongDashboard(){
    link.href=url;link.download='yuedong-training-records.csv';document.body.append(link);link.click();link.remove();
    window.setTimeout(()=>URL.revokeObjectURL(url),1000);
  };
- return <section className="text-slate-100 space-y-5 pb-8" aria-label="跃动未来训练闭环">
-   <div className="rounded-2xl border border-emerald-800/60 bg-gradient-to-br from-slate-900 to-emerald-950/50 p-5 space-y-2">
+ return <section className="text-slate-900 space-y-5 pb-8" aria-label="跃动未来训练闭环">
+   <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-5 space-y-2">
      <p className="text-xs tracking-[0.2em] font-semibold text-emerald-300">立定跳远 · AI教学辅助</p>
      <h2 className="text-xl md:text-2xl font-semibold">跃动未来 · 立定跳远精准学练</h2>
      <p className="text-sm text-slate-300">标准示范 → 学生动作 → 关键帧对齐 → 姿态反馈 → 分层训练 → 成长记录</p>
-     <p className="text-xs text-slate-400">请准备相近机位、相同方向且经授权拍摄的完整侧面视频。视频分析仍使用原工程的 MediaPipe 骨架识别。</p>
+     <p className="text-xs text-slate-400">系统通过人体姿态关键点辅助分析动作。建议使用经授权拍摄的完整侧面视频，保持对比机位一致。</p>
    </div>
+   <StandardDemo />
    <section className={card+' p-4 space-y-3'} aria-label="动作诊断">
      <div className="flex flex-wrap items-center justify-between gap-2">
        <h3 className="font-semibold text-lg">01 · 动作诊断</h3>
