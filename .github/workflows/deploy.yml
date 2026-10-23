@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 'feature/yuedong-integrated-v1' ]
   pull_request:
     branches: [ main ]
 
@@ -42,6 +42,7 @@ jobs:
       run: npm run build
       env:
         NODE_ENV: production
+        VITE_COACH_API_URL: ${{ vars.COACH_API_URL }}
         
     - name: Setup Pages
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
