@@ -149,7 +149,7 @@ export class VideoAnalysisService {
 
       const onError = (_error: Event) => {
         cleanup();
-        reject(new Error('Video playback failed during analysis'));
+        reject(new Error('分析时视频播放失败'));
       };
 
       const cleanup = () => {
@@ -168,7 +168,7 @@ export class VideoAnalysisService {
       // Start playback
       videoElement.play().catch((error) => {
         cleanup();
-        reject(new Error(`Failed to start video playback: ${error.message}`));
+        reject(new Error(`无法开始播放视频： ${error.message}`));
       });
     });
   }
@@ -179,7 +179,7 @@ export class VideoAnalysisService {
     fps: number = 30 // Match typical video frame rate
   ): Promise<void> {
     if (this.isAnalyzing) {
-      throw new Error('Analysis already in progress');
+      throw new Error('动作分析正在进行，请勿重复提交');
     }
 
     this.isAnalyzing = true;
@@ -259,7 +259,7 @@ export class VideoAnalysisService {
       
     } catch (error) {
       // Batch analysis failed
-      store.setAnalysisError(`Analysis failed: ${error}`);
+      store.setAnalysisError(`视频分析失败： ${error}`);
       throw error;
     } finally {
       this.isAnalyzing = false;
