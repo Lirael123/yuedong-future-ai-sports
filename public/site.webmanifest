@@ -1,7 +1,7 @@
 {
-  "name": "Feedback Loop - Figure Skating Jump Analyzer",
-  "short_name": "Feedback Loop",
-  "description": "AI-powered figure skating jump analysis and technique improvement",
+  "name": "跃动未来 · 立定跳远教学系统",
+  "short_name": "跃动未来",
+  "description": "AI-assisted standing long jump learning and progress tracking",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -14,11 +14,11 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#5dade2",
+  "theme_color": "#064e3b",
   "background_color": "#1f2937",
   "display": "standalone",
-  "scope": "/feedback-loop/",
-  "start_url": "/feedback-loop/",
+  "scope": "/yuedong-future-ai-sports/",
+  "start_url": "/yuedong-future-ai-sports/",
   "orientation": "portrait-primary",
   "categories": ["sports", "education", "productivity"]
 }

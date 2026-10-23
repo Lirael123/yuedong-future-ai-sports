@@ -50,12 +50,12 @@ export default function SampleVideoSelector({ isOpen, onClose, onVideoSelect }: 
     try {
       const basePath = import.meta.env.BASE_URL;
       const response = await fetch(`${basePath}sample-videos/sample-data.json`);
-      if (!response.ok) throw new Error('Failed to load sample data');
+      if (!response.ok) throw new Error('无法加载示例视频数据');
 
       const data = await response.json();
       setSampleVideos(data.videos);
     } catch (err) {
-      setError('Failed to load sample videos');
+      setError('无法加载示例视频');
       // Error loading sample data
     } finally {
       setLoading(false);
@@ -97,13 +97,13 @@ export default function SampleVideoSelector({ isOpen, onClose, onVideoSelect }: 
         {/* Content */}
         <div className="bg-gray-900 rounded-2xl p-6 max-h-[70vh] overflow-y-auto">
           <h2 className="text-white text-lg font-semibold mb-5 text-center">
-            Choose Sample Video
+            选择示例视频
           </h2>
 
           {loading && (
             <div className="text-center py-8">
               <div className="inline-block w-8 h-8 border-3 border-ice-blue-400 border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-gray-400 mt-2">Loading samples...</p>
+              <p className="text-gray-400 mt-2">正在加载示例视频…</p>
             </div>
           )}
 
@@ -131,10 +131,10 @@ export default function SampleVideoSelector({ isOpen, onClose, onVideoSelect }: 
                       </p>
                       <div className="flex items-center gap-3 mt-2">
                         <span className="text-xs bg-ice-blue-600 bg-opacity-20 text-ice-blue-400 px-2 py-1 rounded">
-                          {video.rotations} rotations
+                          {video.rotations} 次旋转
                         </span>
                         <span className="text-xs text-gray-500">
-                          Frames: {video.markers.takeoff.frame} → {video.markers.landing.frame}
+                          关键帧：{video.markers.takeoff.frame} → {video.markers.landing.frame}
                         </span>
                       </div>
                     </div>
@@ -149,7 +149,7 @@ export default function SampleVideoSelector({ isOpen, onClose, onVideoSelect }: 
 
           <div className="mt-4 pt-4 border-t border-gray-800">
             <p className="text-gray-500 text-xs text-center">
-              Sample videos include pre-analyzed markers for immediate comparison
+              示例视频含有预设关键帧，使用前请核实对应项目与授权。
             </p>
           </div>
         </div>

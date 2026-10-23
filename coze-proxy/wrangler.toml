@@ -1,0 +1,9 @@
+name = "yuedong-coze-bridge"
+main = "worker.js"
+compatibility_date = "2026-10-24"
+
+[vars]
+ALLOWED_ORIGIN = "https://lirael123.github.io"
+COZE_WORKFLOW_ID = ""
+
+# Set COZE_API_TOKEN only in Cloudflare Worker Secrets.

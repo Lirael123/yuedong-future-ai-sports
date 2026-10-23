@@ -9,7 +9,6 @@ interface VideoUploadMenuProps {
 export default function VideoUploadMenu({ 
   isOpen, 
   onClose, 
-  onSelectSample, 
   onSelectFile,
   onRecord 
 }: VideoUploadMenuProps) {
@@ -29,37 +28,11 @@ export default function VideoUploadMenu({
         {/* Content */}
         <div className="bg-gray-900 rounded-2xl p-6">
           <h2 className="text-white text-lg font-semibold mb-5 text-center">
-            Select Video Source
+            选择视频来源
           </h2>
 
           <div className="space-y-3">
-            {/* Sample Video Option */}
-            <button
-              onClick={() => {
-                onSelectSample();
-                onClose();
-              }}
-              className="w-full bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-ice-blue-500 rounded-xl p-4 text-left transition-all group"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-white font-medium group-hover:text-ice-blue-400 transition-colors">
-                      Try Sample Video
-                    </h3>
-                    <span className="text-xs bg-green-600 text-white px-2 py-0.5 rounded-full">
-                      RECOMMENDED
-                    </span>
-                  </div>
-                  <p className="text-gray-400 text-sm mt-1">
-                    Pre-analyzed jump with markers set
-                  </p>
-                </div>
-                <span className="text-2xl">🎬</span>
-              </div>
-            </button>
-
-            {/* Choose from Library */}
+            {/* 从设备选择视频 */}
             <button
               onClick={() => {
                 onSelectFile();
@@ -70,17 +43,17 @@ export default function VideoUploadMenu({
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-white font-medium group-hover:text-ice-blue-400 transition-colors">
-                    Choose from Library
+                    从设备选择视频
                   </h3>
                   <p className="text-gray-400 text-sm mt-1">
-                    Select from your device
+                    请选择经授权的完整侧面跳远视频
                   </p>
                 </div>
                 <span className="text-2xl">📁</span>
               </div>
             </button>
 
-            {/* Record New Video (optional) */}
+            {/* 拍摄新的视频 (optional) */}
             {onRecord && (
               <button
                 onClick={() => {
@@ -92,10 +65,10 @@ export default function VideoUploadMenu({
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-white font-medium group-hover:text-ice-blue-400 transition-colors">
-                      Record New Video
+                      拍摄新视频
                     </h3>
                     <p className="text-gray-400 text-sm mt-1">
-                      Capture a jump now
+                      拍摄一段立定跳远视频
                     </p>
                   </div>
                   <span className="text-2xl">📹</span>

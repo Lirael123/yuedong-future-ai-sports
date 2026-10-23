@@ -273,7 +273,7 @@ export default function VideoContainer({
                 />
                 <span className="text-sm font-bold text-ice-blue-400">{progress}%</span>
               </div>
-              <span className="text-gray-400 text-sm font-medium">Uploading...</span>
+              <span className="text-gray-400 text-sm font-medium">正在读取视频…</span>
             </div>
           ) : (
             // Upload Placeholder
@@ -286,11 +286,11 @@ export default function VideoContainer({
                 </span>
               </div>
               <span className="text-gray-400 text-sm font-medium text-center px-4">
-                {isDragActive ? 'Drop video here' : 'Tap to upload video'}
+                {isDragActive ? '将视频拖到这里' : '点击上传视频'}
               </span>
               {isDragActive && (
                 <span className="text-xs text-ice-blue-400 mt-1">
-                  or drag & drop
+                  或拖放视频文件
                 </span>
               )}
             </div>

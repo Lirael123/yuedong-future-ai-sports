@@ -29,8 +29,8 @@ export default function AngleChart({ title, selectedPlane, className = '' }: Ang
     if (!referenceAngles || !userAngles) {
       // No angle data available - return fallback data
       return { 
-        referenceData: Array(50).fill(0).map((_, i) => 90 + Math.sin(i / 5) * 20),
-        userData: Array(50).fill(0).map((_, i) => 85 + Math.sin(i / 4.5) * 25)
+        referenceData: [],
+        userData: []
       };
     }
 
@@ -39,10 +39,10 @@ export default function AngleChart({ title, selectedPlane, className = '' }: Ang
 
     // Map chart titles to angle data
     if (selectedPlane === 'sagittal') {
-      if (title === 'Left Knee Flexion') {
+      if (title === '左膝角变化') {
         referenceAngleData = referenceAngles.leftKneeFlexion;
         userAngleData = userAngles.leftKneeFlexion;
-      } else if (title === 'Right Knee Flexion') {
+      } else if (title === '右膝角变化') {
         referenceAngleData = referenceAngles.rightKneeFlexion;
         userAngleData = userAngles.rightKneeFlexion;
       } else if (title === 'Hip Flexion') {
@@ -85,8 +85,8 @@ export default function AngleChart({ title, selectedPlane, className = '' }: Ang
 
     // Fall back to mock data if no real data available
     return { 
-      referenceData: Array(50).fill(0).map((_, i) => 90 + Math.sin(i / 5) * 20),
-      userData: Array(50).fill(0).map((_, i) => 85 + Math.sin(i / 4.5) * 25)
+      referenceData: [],
+        userData: []
     };
   };
 
@@ -148,6 +148,13 @@ export default function AngleChart({ title, selectedPlane, className = '' }: Ang
 
     // Get real angle data or fallback to mock data
     const { referenceData, userData } = getAngleData();
+    if (!referenceData.length || !userData.length) {
+      ctx.fillStyle = '#CBD5E1';
+      ctx.font = '14px sans-serif';
+      ctx.fillText('暂无有效角度数据，请先完成视频分析', 12, Math.max(30, height/2));
+      setCurrentAngleValue(null);
+      return;
+    }
     
     // Calculate current angle value - use the same logic as chart curve for consistency
     if (userAnalysis && userAngles && userData.length > 0) {
@@ -189,7 +196,7 @@ export default function AngleChart({ title, selectedPlane, className = '' }: Ang
     const allData = [...referenceData, ...userData];
     const minValue = Math.min(...allData);
     const maxValue = Math.max(...allData);
-    const range = maxValue - minValue;
+    const range = Math.max(1, maxValue - minValue);
     
     // Chart scaling calculated based on data range
 
@@ -264,13 +271,13 @@ export default function AngleChart({ title, selectedPlane, className = '' }: Ang
     ctx.fillStyle = '#A855F7';
     ctx.fillRect(padding, padding - 15, 10, 2);
     ctx.fillStyle = '#D1D5DB'; // gray-300
-    ctx.fillText('Reference', padding + 15, padding - 8);
+    ctx.fillText('标准示范', padding + 15, padding - 8);
     
     // User legend
     ctx.fillStyle = '#3B82F6';
     ctx.fillRect(padding + 80, padding - 15, 10, 2);
     ctx.fillStyle = '#D1D5DB';
-    ctx.fillText('Your Jump', padding + 95, padding - 8);
+    ctx.fillText('学生动作', padding + 95, padding - 8);
 
     // Draw current time indicator (vertical line) - RED like in reference
     if (userAnalysis && referenceData.length > 0) {

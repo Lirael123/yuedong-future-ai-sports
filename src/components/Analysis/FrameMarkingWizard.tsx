@@ -18,29 +18,29 @@ interface WizardStep {
 const WIZARD_STEPS: WizardStep[] = [
   {
     id: 'ref-takeoff',
-    title: 'Mark Reference Takeoff',
-    instruction: 'Find the frame where the reference skater leaves the ice',
+    title: '标记示范视频起跳',
+    instruction: '找到示范运动员双脚刚离地的画面',
     videoType: 'reference',
     markerType: 'takeoff'
   },
   {
     id: 'ref-landing', 
-    title: 'Mark Reference Landing',
-    instruction: 'Find the frame where the reference skater touches down',
+    title: '标记示范视频落地',
+    instruction: '找到示范运动员首次触地的画面',
     videoType: 'reference',
     markerType: 'landing'
   },
   {
     id: 'user-takeoff',
-    title: 'Mark Your Takeoff', 
-    instruction: 'Find the frame where you leave the ice',
+    title: '标记学生视频起跳', 
+    instruction: '找到学生双脚刚离地的画面',
     videoType: 'user',
     markerType: 'takeoff'
   },
   {
     id: 'user-landing',
-    title: 'Mark Your Landing',
-    instruction: 'Find the frame where you touch down',
+    title: '标记学生视频落地',
+    instruction: '找到学生首次触地的画面',
     videoType: 'user', 
     markerType: 'landing'
   }
@@ -428,7 +428,7 @@ export default function FrameMarkingWizard({ isOpen, onClose: _onClose, onComple
       <div className="bg-gray-800 rounded-2xl p-6 max-w-md w-full border border-gray-700">
         {/* Step indicator - exactly like prototype */}
         <div className="text-ice-blue-400 text-xs font-semibold uppercase tracking-wide mb-4 text-center">
-          Step {currentStepIndex + 1} of 4
+          第 {currentStepIndex + 1} 步，共 4 步
         </div>
 
         {/* Title - exactly like prototype */}
@@ -465,7 +465,7 @@ export default function FrameMarkingWizard({ isOpen, onClose: _onClose, onComple
           </button>
           
           <span className="text-white text-sm font-mono min-w-20 text-center tabular-nums">
-            Frame {currentFrame}
+            第 {currentFrame} 帧
           </span>
           
           <button
@@ -483,7 +483,7 @@ export default function FrameMarkingWizard({ isOpen, onClose: _onClose, onComple
         {/* Instruction text - exactly like prototype */}
         <div className="text-center mb-5">
           <p className="text-gray-400 text-sm">
-            Tap once or hold to speed up
+            单击逐帧切换，长按可快速调整
           </p>
         </div>
 
@@ -493,7 +493,7 @@ export default function FrameMarkingWizard({ isOpen, onClose: _onClose, onComple
           disabled={!videoLoaded}
           className="w-full py-4 px-4 bg-gradient-to-br from-ice-blue-400 to-blue-600 hover:from-ice-blue-500 hover:to-blue-700 border-none rounded-xl text-white text-base font-semibold cursor-pointer transition-all duration-300 uppercase tracking-wide transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-ice-blue-500/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
         >
-          Mark This Frame
+          确认标记此帧
         </button>
       </div>
     </div>
