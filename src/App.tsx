@@ -263,7 +263,7 @@ function App() {
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="text-white text-center">
               <div className="w-8 h-8 border-2 border-ice-blue-400 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-              <div className="text-sm">Restoring session...</div>
+              <div className="text-sm">正在恢复上次训练数据…</div>
             </div>
           </div>
         )}
