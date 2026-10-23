@@ -58,7 +58,7 @@ function goodMarkers(a:VideoAnalysisInput|null,m:JumpMarkers|null):boolean {
  m.takeoffFrame>=5 && m.landingFrame>m.takeoffFrame+4 && m.landingFrame<n-1;
 }
 export function analyzeLongJump(student:VideoAnalysisInput|null,sm:JumpMarkers|null,reference:VideoAnalysisInput|null,rm:JumpMarkers|null):Report {
- const insufficient=unknownReport('请上传同方向、相近机位的标准示范与学生立定跳远视频，标记起跳和落地，再完成视频骨架分析。');
+ const insufficient=unknownReport('标准动作示意模板已固定。请上传学生的完整侧面跳远视频，标记起跳与落地，再进行动作分析。');
  if(!goodMarkers(student,sm)||!goodMarkers(reference,rm))return insufficient;
  const s=student!,r=reference!;
  const found=phases.map(p=>[p,phaseSample(s,sm!,p),phaseSample(r,rm!,p)] as const);
@@ -79,7 +79,7 @@ export function analyzeLongJump(student:VideoAnalysisInput|null,sm:JumpMarkers|n
  check('takeoff','SLJ-02','蹬伸幅度可能不足','教师观察蹬地时髋膝踝协同伸展及向前上方起跳方向。',(a,b)=>a<b-20&&a<160);
  check('airborne','SLJ-03','腾空收腿可能不足','通过低冲击动作练习收腿与前伸的协调，不在疲劳时重复跳跃。',(a,b)=>a>b+25&&a>105);
  check('landing','SLJ-04','落地屈膝缓冲可能不足','注意双脚着地、屈膝缓冲，优先保证稳定和安全。',(a,b)=>a>b+25&&a>135);
- return {status:'ready',notice:'基于真实视频关键点的试验性动作对比，仅辅助教学，需体育教师复核；不进行自动测距或正式成绩评分。',frameCount:count,phases:shots,findings};
+ return {status:'ready',notice:'学生动作由视频关键点估算；参考角度来自固定示意模板，不是真人标准数据库。诊断仅辅助教学，需体育教师复核，不用于正式测距评分。',frameCount:count,phases:shots,findings};
 }
 const tasks:Record<Tier,Task[]> = {
  foundation:[
