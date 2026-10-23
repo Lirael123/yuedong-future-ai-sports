@@ -237,7 +237,7 @@ function App() {
     if (hasValidAnalysis()) return '导出分析视频'
     if (canAnalyze) return '开始动作分析'
     if (canStartWizard) return '标记起跳与落地'
-    if (!hasVideos) return '请先上传示范和练习视频'
+    if (!hasVideos) return '请先上传动作对比和学生视频'
     return '请先完成关键帧标记'
   }
 
@@ -277,14 +277,14 @@ function App() {
         {/* Video Section - Responsive height for better use of space */}
         <div className="flex-none h-[235px] ipad:h-[300px] desktop:h-[320px] p-3 ipad:p-4 desktop:p-5 flex gap-2 ipad:gap-3">
           <VideoContainer
-            label="标准示范"
+            label="标准动作对比（分析用）"
             type="reference"
             onVideoUploaded={handleReferenceVideoUpload}
             onVideoRemoved={handleVideoRemoved}
             onSampleVideoLoading={setIsLoadingSampleVideos}
           />
           <VideoContainer
-            label="学生立定跳远"
+            label="学生动作视频"
             type="user"
             onVideoUploaded={handleUserVideoUpload}
             onVideoRemoved={handleVideoRemoved}

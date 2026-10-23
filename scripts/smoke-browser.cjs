@@ -1,4 +1,4 @@
-const { chromium, devices } = require('playwright');
+const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
 
 async function check() {
@@ -13,14 +13,22 @@ async function check() {
   await page.getByText('跃动未来 · AI立定跳远教学诊断').waitFor();
   await page.getByRole('heading',{name:/跃动未来 · 立定跳远精准学练/}).waitFor();
   await page.getByRole('heading',{name:/AI运动教练/}).waitFor();
-  await page.getByText('本地教学指导 · Coze 待接入').waitFor();
+  await page.getByText('基础动作指导').waitFor();
+  await page.getByRole('heading',{name:'立定跳远标准动作示范'}).waitFor();
+  const demo=page.locator('iframe[title="立定跳远中文标准动作教学视频"]');
+  assert.ok((await demo.getAttribute('src')).includes('BV1Nz42187EP'),'Chinese coach video must be fixed');
+  const palette=await page.locator('.theme-light').evaluate(el=>getComputedStyle(el).backgroundColor);
+  assert.equal(palette,'rgb(255, 255, 255)','site should have white background');
+  const bodyText=await page.locator('body').innerText();
+  assert.ok(!bodyText.includes('原工程'),'legacy project copy should not be visible');
+  assert.ok(!bodyText.includes('Coze 待接入'),'no API placeholder status should appear');
   const diagnose=page.getByRole('heading',{name:/动作诊断/});await diagnose.waitFor();
   const practice=page.getByRole('heading',{name:/分层学练/});await practice.waitFor();
   const history=page.getByRole('heading',{name:/运动成长档案/});await history.waitFor();
   // Exercise local fallback without treating it as a connected cloud AI.
   await page.getByRole('button',{name:'获取训练建议'}).click();
-  await page.getByText('本地规则建议（未调用 Coze）').waitFor();
-  await page.getByText(/这里使用本地教学规则/).waitFor();
+  await page.getByText('动作练习建议 · 规则匹配').waitFor();
+  await page.getByText(/可结合教师观察结果选择练习任务/).waitFor();
   // Actual persistence in browser storage after an anonymous practice note.
   await page.getByRole('textbox',{name:'匿名学生编号'}).fill(name==='mobile'?'MTEST':'DTEST');
   await page.getByRole('textbox',{name:'教师观察记录'}).fill('界面自动验收记录');
@@ -39,7 +47,7 @@ async function check() {
   await run({width:1440,height:900},'desktop');
   await run({width:390,height:844},'mobile');
   assert.deepEqual(failures,[],'no runtime page errors');
-  process.stdout.write('PASS: desktop and mobile startup, Chinese UI, local coach, persistent record and screenshots\n');
+  process.stdout.write('PASS: desktop and mobile Chinese white UI, embedded coaching video, local coach, persisted records\n');
  } finally {await browser.close()}
 }
 check().catch(e=>{console.error(e);process.exit(1)});
