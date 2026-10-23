@@ -275,7 +275,7 @@ function App() {
         <OfflineIndicator />
 
         {/* Video Section - Responsive height for better use of space */}
-        <div className="flex-none h-[340px] ipad:h-[500px] desktop:h-[480px] p-3 ipad:p-4 desktop:p-5 flex gap-2 ipad:gap-3">
+        <div className="flex-none h-[235px] ipad:h-[300px] desktop:h-[320px] p-3 ipad:p-4 desktop:p-5 flex gap-2 ipad:gap-3">
           <VideoContainer
             label="标准示范"
             type="reference"
