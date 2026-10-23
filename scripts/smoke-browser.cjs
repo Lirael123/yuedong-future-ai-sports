@@ -36,8 +36,8 @@ async function check() {
   const history=page.getByRole('heading',{name:/运动成长档案/});await history.waitFor();
   // Exercise local fallback without treating it as a connected cloud AI.
   await page.getByRole('button',{name:'获取训练建议'}).click();
-  await page.getByText('动作练习建议 · 规则匹配').waitFor();
-  await page.getByText(/可结合教师观察结果选择练习任务/).waitFor();
+  await page.getByText('基础教学建议').waitFor();
+  await page.getByText(/尚无有效动作诊断。可以先学习/).waitFor();
   // Actual persistence in browser storage after an anonymous practice note.
   await page.getByRole('textbox',{name:'匿名学生编号'}).fill(name==='mobile'?'MTEST':'DTEST');
   await page.getByRole('textbox',{name:'教师观察记录'}).fill('界面自动验收记录');
