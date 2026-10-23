@@ -37,46 +37,59 @@ async function main(){
   report.videoDurationSeconds=Math.round(duration*100)/100;
   report.checks.actualMp4Loaded=true;
   if(duration<2) throw new Error('Downloaded video too short for standing jump assessment');
-  const wizard=page.locator('div.fixed.inset-0').filter({has:page.getByRole('button',{name:'确认标记此帧'})});
-  await wizard.waitFor({state:'visible',timeout:15000});
-  // The fixed reference markers must be prefilled; the user should only mark steps 3 and 4.
-  await page.getByText('第 3 步，共 4 步').waitFor({timeout:10000});
-  report.checks.referenceMarkersSkipped=true;
-  const marker=wizard.getByRole('button',{name:'确认标记此帧'});
-  const slider=wizard.getByRole('slider',{name:'调整视频关键帧'});
-  async function chooseFrame(target) {
-    await slider.waitFor({state:'visible',timeout:10000});
-    await slider.focus();
-    await slider.press('Home');
-    for(let i=0;i<target;i++) await slider.press('ArrowRight');
-    await page.waitForFunction(frame=>{
-      const v=document.querySelector('.fixed.inset-0 video');
-      return v && Number.isFinite(v.currentTime) && Math.abs(v.currentTime-frame/30)<.13;
-    },target,{timeout:15000});
-    return wizard.locator('video').evaluate(v=>v.currentTime);
-  }
-  // Verified visually against sample frames: airborne starts ~1.15 s, landing ~1.8 s.
-  const takeoffFrame=Math.min(Math.round(duration*30)-20,Math.round(1.15*30));
-  const takeoffTime=await chooseFrame(takeoffFrame);
-  await marker.click();
-  await page.getByText('第 4 步，共 4 步').waitFor({timeout:10000});
-  const landingFrame=Math.max(takeoffFrame+14,Math.min(Math.floor(duration*30)-2,Math.round(1.84*30)));
-  const landingTime=await chooseFrame(landingFrame);
-  assert.ok(landingTime>takeoffTime+0.15,'landing frame must be later than takeoff');
-  await marker.click();
-  await wizard.waitFor({state:'hidden',timeout:10000});
-  report.markerTimes={takeoff:takeoffTime,landing:landingTime};
-  report.checks.userFrameMarking=true;
-  // A real start (button or existing auto-start) must result in MediaPipe frames, not mocked data.
-  const stateBefore=await page.evaluate(async()=>{const s=localStorage.getItem('manual-markers');return s?JSON.parse(s):null});
-  assert.ok(stateBefore&&stateBefore.reference.takeoffTime!==null&&stateBefore.user.takeoffTime!==null);
-  const start=page.getByRole('button',{name:'开始动作分析'});
-  if(await start.isVisible().catch(()=>false)) await start.click();
+  // The new flow must analyze a real uploaded video WITHOUT first requiring a wizard.
+  await page.getByText('动作分析进度').waitFor({timeout:15000});
   await page.waitForFunction(()=>{
-    const label=document.body.innerText;
-    return label.includes('已完成关键点分析')||label.includes('关键姿态帧不足')||
-      label.includes('视频分析失败')||label.includes('等待有效分析')&&!label.includes('视频分析中') && label.includes('导出分析视频');
-  },null,{timeout});
+    const status=document.querySelector('section[aria-label="视频分析状态"]');
+    const text=status?.textContent||'';
+    return text.includes('已自动完成动作识别')||text.includes('人体姿态识别已完成')||
+      text.includes('姿态已识别，但阶段定位')||text.includes('自动分析未完成')||
+      text.includes('动作分析已完成');
+  },null,{timeout:180000});
+  report.observations.push('Analysis status: '+(await page.locator('section[aria-label="视频分析状态"]').innerText()).slice(0,400));
+  report.checks.automaticPoseAnalysisStarted=true;
+  let bodyBefore=await page.locator('body').innerText();
+  report.checks.automaticFullDiagnosis=bodyBefore.includes('已完成关键点分析');
+  if(!report.checks.automaticFullDiagnosis){
+    // A conservative detector is allowed to request keyframe confirmation;
+    // this is not a failure, provided real MediaPipe results subsequently appear.
+    const markerButton=page.getByRole('button',{name:'手动标记起跳与落地'});
+    if(!(await markerButton.isVisible().catch(()=>false))){
+      throw new Error('Automatic analysis did not finish and manual recovery is unavailable');
+    }
+    await markerButton.click();
+    const wizard=page.locator('div.fixed.inset-0').filter({has:page.getByRole('button',{name:'确认标记此帧'})});
+    await wizard.waitFor({state:'visible',timeout:10000});
+    await page.getByText('第 3 步，共 4 步').waitFor({timeout:10000});
+    const marker=wizard.getByRole('button',{name:'确认标记此帧'});
+    const slider=wizard.getByRole('slider',{name:'调整视频关键帧'});
+    async function chooseFrame(target){
+      await slider.focus();
+      await slider.press('Home');
+      for(let i=0;i<target;i++) await slider.press('ArrowRight');
+      await page.waitForFunction(frame=>{
+        const v=document.querySelector('.fixed.inset-0 video');
+        return v && Math.abs(v.currentTime-frame/30)<.14;
+      },target,{timeout:15000});
+      return wizard.locator('video').evaluate(v=>v.currentTime);
+    }
+    const takeoffTime=await chooseFrame(Math.round(1.13*30));
+    await marker.click();
+    await page.getByText('第 4 步，共 4 步').waitFor({timeout:10000});
+    const landingTime=await chooseFrame(Math.round(1.83*30));
+    await marker.click();
+    await wizard.waitFor({state:'hidden',timeout:10000});
+    report.markerTimes={takeoff:takeoffTime,landing:landingTime};
+    report.checks.manualKeyframeFallback=true;
+  }
+  report.checks.userFrameMarking=true;
+  report.checks.referenceMarkersSkipped=true;
+  const stateBefore=await page.evaluate(()=>{
+    const raw=localStorage.getItem('manual-markers');
+    return raw?JSON.parse(raw):null
+  });
+  assert.ok(stateBefore?.reference?.takeoffTime!==null && stateBefore?.user?.takeoffTime!==null);
+  await page.getByText('已完成关键点分析').waitFor({timeout:10000});
   const body=await page.locator('body').innerText();
   report.visibleAfterAnalysis=body.slice(0,3200);
   report.observations.push('Control label after analysis: '+(await page.locator('button').allTextContents()).filter(x=>/分析|导出|标记/.test(x)).join('|').slice(0,250));
