@@ -37,7 +37,7 @@ const OfflineIndicator: React.FC = () => {
     >
       <div className="flex items-center gap-2">
         <span className="text-sm font-medium">
-          {isOnline ? "✅ Back online" : "⚠️ Working offline"}
+          {isOnline ? "✅ 网络已恢复" : "⚠️ 当前离线"}
         </span>
       </div>
     </div>
