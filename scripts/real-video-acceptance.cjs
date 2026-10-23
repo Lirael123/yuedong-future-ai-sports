@@ -55,11 +55,12 @@ async function main(){
     },target,{timeout:15000});
     return wizard.locator('video').evaluate(v=>v.currentTime);
   }
-  const takeoffFrame=Math.max(12,Math.min(36,Math.floor(duration*30*.28)));
+  // Verified visually against sample frames: airborne starts ~1.15 s, landing ~1.8 s.
+  const takeoffFrame=Math.min(Math.round(duration*30)-20,Math.round(1.15*30));
   const takeoffTime=await chooseFrame(takeoffFrame);
   await marker.click();
   await page.getByText('第 4 步，共 4 步').waitFor({timeout:10000});
-  const landingFrame=Math.max(takeoffFrame+16,Math.min(Math.floor(duration*30)-2,Math.floor(duration*30*.70)));
+  const landingFrame=Math.max(takeoffFrame+14,Math.min(Math.floor(duration*30)-2,Math.round(1.84*30)));
   const landingTime=await chooseFrame(landingFrame);
   assert.ok(landingTime>takeoffTime+0.15,'landing frame must be later than takeoff');
   await marker.click();
