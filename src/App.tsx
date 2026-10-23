@@ -13,6 +13,7 @@ import { VideoFile } from './hooks/useVideoUpload'
 import { useAnalysisStore, ManualMarkers } from './store/analysisStore'
 import { videoAnalysisService } from './services/videoAnalysisService'
 import { videoExportService } from './services/videoExportService'
+import {FIXED_REFERENCE_URL,FIXED_REFERENCE_DURATION,fixedReferenceMarker} from './services/standardReference'
 
 function App() {
   const {
@@ -29,7 +30,6 @@ function App() {
     manualMarkers,
     setManualMarkers,
     hasValidMarkers,
-    clearManualMarkers,
     restoreVideosFromStorage,
     restoreManualMarkersFromStorage,
     saveState,
@@ -62,6 +62,21 @@ function App() {
         if (!stateRestored) {
           restoreManualMarkersFromStorage()
         }
+        // Keep a single author-controlled analysis reference across sessions.
+        const state = useAnalysisStore.getState()
+        if (state.referenceVideo?.url !== FIXED_REFERENCE_URL) {
+          state.clearAnalysis()
+        }
+        const now = useAnalysisStore.getState()
+        now.setReferenceVideo({
+          name: '系统标准动作示意动画 · 固定版',
+          url: FIXED_REFERENCE_URL,
+          duration: FIXED_REFERENCE_DURATION
+        }, false)
+        const user = now.manualMarkers?.user || {
+          takeoffFrame:null,takeoffTime:null,landingFrame:null,landingTime:null
+        }
+        now.setManualMarkers({reference:fixedReferenceMarker,user})
       } finally {
         // Always set restoration as complete, even if it failed
         setIsRestoringState(false)
@@ -97,20 +112,6 @@ function App() {
     }
   }, [canAnalyze, hasValidAnalysis, isAnalyzing, manualMarkers])
 
-  const handleReferenceVideoUpload = (video: VideoFile) => {
-    setReferenceVideo({
-      name: video.name,
-      url: video.url,
-      duration: video.duration || 0,
-      file: video.file || undefined,
-    }, true)
-    
-    // Clear manual markers when reference video changes
-    if (manualMarkers?.reference.takeoffTime !== null) {
-      clearManualMarkers()
-    }
-  }
-
   const handleUserVideoUpload = (video: VideoFile) => {
     setUserVideo({
       name: video.name,
@@ -124,7 +125,10 @@ function App() {
     
     // Clear manual markers when user video changes
     if (manualMarkers?.user.takeoffTime !== null) {
-      clearManualMarkers()
+      useAnalysisStore.getState().setManualMarkers({
+        reference:fixedReferenceMarker,
+        user:{takeoffFrame:null,takeoffTime:null,landingFrame:null,landingTime:null}
+      })
     }
   }
 
@@ -257,7 +261,7 @@ function App() {
 
   return (
     <AppContainer>
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col min-h-screen">
         {/* Loading overlay during state restoration */}
         {isRestoringState && (
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -275,11 +279,11 @@ function App() {
         <OfflineIndicator />
 
         {/* Video Section - Responsive height for better use of space */}
-        <div className="flex-none h-[235px] ipad:h-[300px] desktop:h-[320px] p-3 ipad:p-4 desktop:p-5 flex gap-2 ipad:gap-3">
+        <div className="h-[245px] md:h-[330px] p-3 md:p-5 grid grid-cols-1 md:grid-cols-2 gap-3 mb-2 auto-rows-fr">
           <VideoContainer
-            label="标准动作对比（分析用）"
+            label="固定标准动作 · V1"
             type="reference"
-            onVideoUploaded={handleReferenceVideoUpload}
+            showCloseButton={false}
             onVideoRemoved={handleVideoRemoved}
             onSampleVideoLoading={setIsLoadingSampleVideos}
           />
@@ -312,7 +316,7 @@ function App() {
         />
 
         {/* Content Area - Scrollable */}
-        <div className="flex-1 px-4 pb-4 overflow-y-auto">
+        <div className="px-4 pb-4">
           {activeTab === 'overview' ? (
             <YuedongDashboard />
           ) : (
