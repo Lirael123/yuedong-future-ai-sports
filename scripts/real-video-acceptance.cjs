@@ -50,6 +50,11 @@ async function main(){
   report.checks.automaticPoseAnalysisStarted=true;
   let bodyBefore=await page.locator('body').innerText();
   report.checks.automaticFullDiagnosis=bodyBefore.includes('已完成关键点分析');
+  assert.ok(!bodyBefore.includes('$已自动'), 'analysis status cannot contain stray placeholder characters');
+  if(report.checks.automaticFullDiagnosis){
+    await page.getByRole('button',{name:'查看诊断报告 ↓'}).click();
+    await page.locator('#jump-diagnosis').waitFor({state:'visible'});
+  }
   if(!report.checks.automaticFullDiagnosis){
     // A conservative detector is allowed to request keyframe confirmation;
     // this is not a failure, provided real MediaPipe results subsequently appear.
