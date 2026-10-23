@@ -15,6 +15,15 @@ async function check() {
   await page.getByRole('heading',{name:/AI运动教练/}).waitFor();
   await page.getByText('基础动作指导').waitFor();
   await page.getByRole('heading',{name:'立定跳远标准动作示范'}).waitFor();
+  const fixed = page.locator('video[data-video-type="reference"]');
+  await fixed.waitFor({state:'attached',timeout:10000});
+  const fixedSrc=await fixed.getAttribute('src');
+  assert.ok(fixedSrc?.includes('reference/standing-long-jump-v1.mp4'),'fixed analyzable reference must load');
+  const res=await page.request.get(new URL(fixedSrc,base).toString());
+  assert.equal(res.status(),200,'reference mp4 must be part of local build');
+  assert.ok((res.headers()['content-type']||'').includes('video/mp4'),'should serve mp4');
+  const scrollHeight=await page.evaluate(()=>document.documentElement.scrollHeight);
+  assert.ok(scrollHeight>viewport.height+300,'whole document should scroll past upload panels');
   const demo=page.locator('iframe[title="立定跳远中文标准动作教学视频"]');
   assert.ok((await demo.getAttribute('src')).includes('BV1Nz42187EP'),'Chinese coach video must be fixed');
   const palette=await page.locator('.theme-light').evaluate(el=>getComputedStyle(el).backgroundColor);
