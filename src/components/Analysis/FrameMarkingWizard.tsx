@@ -129,6 +129,7 @@ export default function FrameMarkingWizard({ isOpen, onClose: _onClose, onComple
   const [currentFrame, setCurrentFrame] = useState(0);
   const [maxFrames, setMaxFrames] = useState(0);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [markerError, setMarkerError] = useState('');
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const intervalRef = useRef<number>();
@@ -214,7 +215,7 @@ export default function FrameMarkingWizard({ isOpen, onClose: _onClose, onComple
       video.removeEventListener('canplaythrough', handleCanPlayThrough);
       video.removeEventListener('loadeddata', handleCanPlayThrough);
     };
-  }, [currentStepIndex, videoLoaded]);
+  }, [currentStepIndex, isOpen]);
 
 
   // Fallback check for video readiness (for restored videos that might not fire events)
@@ -357,6 +358,12 @@ export default function FrameMarkingWizard({ isOpen, onClose: _onClose, onComple
     if (!video || !currentStep) return;
 
     const currentTime = video.currentTime;
+    if (currentStep.videoType === 'user' && currentStep.markerType === 'landing' &&
+        markers.user.takeoffTime !== null && currentTime <= markers.user.takeoffTime + 0.12) {
+      setMarkerError('落地时刻必须晚于起跳时刻，请将视频调整到实际落地画面。');
+      return;
+    }
+    setMarkerError('');
     const newMarkers = { ...markers };
     
     if (currentStep.videoType === 'reference') {
@@ -480,6 +487,15 @@ export default function FrameMarkingWizard({ isOpen, onClose: _onClose, onComple
           </button>
         </div>
 
+        <label className="mb-3 block text-center text-sm text-gray-200">
+          直接选择动作关键帧
+          <input type="range" aria-label="调整视频关键帧"
+            className="mt-2 w-full accent-emerald-500" min={0} max={Math.max(0,maxFrames-1)}
+            step={1} value={currentFrame}
+            disabled={!videoLoaded}
+            onChange={event => {setMarkerError('');seekToFrame(Number(event.target.value))}} />
+        </label>
+        {markerError && <p role="alert" className="mb-3 text-center text-amber-300 text-sm">{markerError}</p>}
         {/* Instruction text - exactly like prototype */}
         <div className="text-center mb-5">
           <p className="text-gray-400 text-sm">

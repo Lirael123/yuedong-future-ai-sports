@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -91,6 +95,24 @@ jobs:
             sleep 1
           done
           node scripts/smoke-browser.cjs
+      - name: Fetch public standing long jump footage (test only)
+        run: |
+          curl -fLSs --retry 3 --connect-timeout 20 --max-time 120 \
+            "https://paralympics.ie/wp-content/uploads/Standing-long-jump-side.mp4" \
+            -o /tmp/slj-public-fixture.mp4
+          test $(stat -c%s /tmp/slj-public-fixture.mp4) -gt 10000
+      - name: Run real-video MediaPipe end-to-end acceptance
+        env:
+          SLJ_VIDEO_FILE: /tmp/slj-public-fixture.mp4
+        run: node scripts/real-video-acceptance.cjs
+      - name: Upload real-video JSON result (no source media)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: yuedong-real-video-acceptance
+          path: real-video-acceptance.json
+          retention-days: 3
+          if-no-files-found: ignore
       - name: Upload verification screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -98,3 +120,4 @@ jobs:
           name: yuedong-browser-preview
           path: smoke-*.png
           if-no-files-found: ignore
+

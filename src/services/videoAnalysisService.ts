@@ -52,6 +52,11 @@ export class VideoAnalysisService {
    * Analyze video using natural playback with slower speed for better MediaPipe tracking
    * Maintains temporal consistency for improved pose detection in fast movements
    */
+  /**
+   * Deterministic full-timeline capture. Pausing and seeking samples a real decoded
+   * video frame at each planned timestamp; natural slow playback previously missed
+   * late jump frames in headless browsers and on throttled mobile devices.
+   */
   private async analyzeWithSlowPlayback(
     videoElement: HTMLVideoElement,
     type: 'reference' | 'user',
@@ -59,119 +64,45 @@ export class VideoAnalysisService {
     duration: number
   ): Promise<void> {
     const store = useAnalysisStore.getState();
-    const totalFrames = Math.floor(duration * fps);
-    const frameInterval = 1000 / fps; // ms between frames at normal speed
-
-    // Slower playback for better detection
-    // 0.25 = 25% speed (very slow, best detection)
-    // 0.5 = 50% speed (balanced)
-    // 1.0 = normal speed (fastest, may miss poses)
-    const PLAYBACK_RATE = 0.25; // Using 25% speed for maximum accuracy
-
-    let frameIndex = 0;
-
-    console.log(`🎬 Starting slow playback analysis: ${totalFrames} frames at ${fps}fps (${PLAYBACK_RATE}x speed)`);
-
-    return new Promise((resolve, reject) => {
-      // Reset video to start
-      videoElement.currentTime = 0;
-      videoElement.playbackRate = PLAYBACK_RATE; // Set slower playback
-
-      // Process frames during natural playback
-      const processFrame = async () => {
-        if (this.abortController?.signal.aborted) {
-          cleanup();
-          resolve();
-          return;
-        }
-
-        const currentTime = videoElement.currentTime * 1000; // Convert to ms
-
-        // Capture frame based on expected timing (accounting for playback rate)
-        if (currentTime >= (frameIndex * frameInterval)) {
-          try {
-            // Process with MediaPipe - no force needed, natural flow maintains context
-            const results = await poseDetector.detectPose(videoElement);
-            const landmarks = results?.landmarks[0] || null;
-            const worldLandmarks = results?.worldLandmarks?.[0] || null;
-
-            // Store frame data
-            store.updateFrameAnalysisWithTimestamp(
-              type,
-              frameIndex,
-              landmarks,
-              videoElement.currentTime,
-              worldLandmarks
-            );
-
-            frameIndex++;
-
-            // Progress update
-            if (frameIndex % 10 === 0 || frameIndex === totalFrames) {
-              const progress = (frameIndex / totalFrames) * 100;
-              console.log(`⏳ ${type}: Frame ${frameIndex}/${totalFrames} (${progress.toFixed(1)}%) - Time: ${(currentTime/1000).toFixed(2)}s`);
-            }
-
-          } catch (error) {
-            // Frame detection failed
-            store.updateFrameAnalysisWithTimestamp(
-              type,
-              frameIndex,
-              null,
-              videoElement.currentTime,
-              null
-            );
-            frameIndex++;
-          }
-        }
-
-        // Continue if video is still playing and we haven't captured all frames
-        if (!videoElement.ended && !videoElement.paused && frameIndex < totalFrames) {
-          requestAnimationFrame(processFrame);
-        } else if (frameIndex >= totalFrames) {
-          cleanup();
-          store.completeAnalysis(type);
-          console.log(`✅ Completed ${type} video analysis: ${frameIndex} frames processed`);
-          resolve();
-        }
-      };
-
-      // Event handlers
-      const onPlaying = () => {
-        requestAnimationFrame(processFrame);
-      };
-
-      const onEnded = () => {
-        cleanup();
-        store.completeAnalysis(type);
-        console.log(`✅ Video ended - ${type} analysis: ${frameIndex}/${totalFrames} frames processed`);
-        resolve();
-      };
-
-      const onError = (_error: Event) => {
-        cleanup();
-        reject(new Error('分析时视频播放失败'));
-      };
-
-      const cleanup = () => {
-        videoElement.removeEventListener('playing', onPlaying);
-        videoElement.removeEventListener('ended', onEnded);
-        videoElement.removeEventListener('error', onError);
-        videoElement.pause();
-        videoElement.playbackRate = 1.0; // Reset to normal speed
-      };
-
-      // Set up event listeners
-      videoElement.addEventListener('playing', onPlaying);
-      videoElement.addEventListener('ended', onEnded);
-      videoElement.addEventListener('error', onError);
-
-      // Start playback
-      videoElement.play().catch((error) => {
-        cleanup();
-        reject(new Error(`无法开始播放视频： ${error.message}`));
+    const totalFrames = Math.min(600, Math.ceil(duration * fps));
+    const lastTime = Math.max(0, duration - 0.05);
+    const seekTo = async (seconds: number): Promise<void> => {
+      const target = Math.min(lastTime, Math.max(0, seconds));
+      if (Math.abs(videoElement.currentTime - target) < 0.008 && videoElement.readyState >= 2) return;
+      await new Promise<void>((resolve, reject) => {
+        let done = false;
+        const finish = (err?:Error) => {
+          if(done)return;done=true;
+          window.clearTimeout(timer);
+          videoElement.removeEventListener('seeked',onSeeked);
+          if(err)reject(err);else resolve();
+        };
+        const onSeeked = () => finish();
+        const timer = window.setTimeout(() => finish(new Error('视频定位超时，请检查编码格式。')), 8000);
+        videoElement.addEventListener('seeked', onSeeked, {once:true});
+        try { videoElement.currentTime = target; } catch(e) {finish(e instanceof Error?e:new Error('无法定位视频帧'))}
       });
-    });
+    };
+    videoElement.pause();
+    try {
+      for (let i=0;i<totalFrames;i++) {
+        if (this.abortController?.signal.aborted) return;
+        const t=Math.min(i/fps,lastTime);
+        await seekTo(t);
+        let landmarks=null,worldLandmarks=null;
+        try {
+          const results=await poseDetector.detectPose(videoElement);
+          landmarks=results?.landmarks[0]||null;
+          worldLandmarks=results?.worldLandmarks?.[0]||null;
+        } catch {
+          // Keep absent frames absent. Never fabricate skeleton data.
+        }
+        store.updateFrameAnalysisWithTimestamp(type,i,landmarks,t,worldLandmarks);
+      }
+      store.completeAnalysis(type);
+    } finally {
+      videoElement.pause();
+    }
   }
 
   async analyzeBothVideos(

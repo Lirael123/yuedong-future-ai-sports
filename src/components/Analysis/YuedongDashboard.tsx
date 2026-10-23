@@ -20,7 +20,7 @@ function numericBars(items:RecordEntry[]) {
 const card='rounded-xl border border-slate-200 bg-white shadow-sm';
 const button='rounded-lg px-4 py-2 text-sm font-semibold transition-colors';
 export default function YuedongDashboard(){
- const {referenceAnalysis,userAnalysis,referenceMetrics,userMetrics}=useAnalysisStore();
+ const {referenceAnalysis,userAnalysis,manualMarkers}=useAnalysisStore();
  const [student,setStudent]=useState('学生A');
  const [tier,setTier]=useState<Tier>('foundation');
  const [checked,setChecked]=useState<string[]>([]);
@@ -29,10 +29,18 @@ export default function YuedongDashboard(){
  const [records,setRecords]=useState<RecordEntry[]>(storedRecords);
  const [message,setMessage]=useState('');
  const id=cleanId(student);
+ // Standing-long-jump analysis uses the labeled event TIMES directly.
+ // Legacy figure-skating JumpMetrics may fail on valid horizontal jumps and is not required.
+ const markersFor=(analysis:typeof userAnalysis,times:{takeoffTime:number|null;landingTime:number|null}|undefined)=>{
+   if(!analysis||!times||times.takeoffTime===null||times.landingTime===null) return null;
+   const n=analysis.frames.length;
+   const indexAt=(seconds:number)=>Math.max(0,Math.min(n-1,Math.round(seconds*analysis.fps)));
+   return {takeoffFrame:indexAt(times.takeoffTime),landingFrame:indexAt(times.landingTime)};
+ };
  const report:Report=useMemo(()=>analyzeLongJump(
-  userAnalysis,userMetrics?{takeoffFrame:userMetrics.takeoffFrame,landingFrame:userMetrics.landingFrame}:null,
-  referenceAnalysis,referenceMetrics?{takeoffFrame:referenceMetrics.takeoffFrame,landingFrame:referenceMetrics.landingFrame}:null
- ),[userAnalysis,userMetrics,referenceAnalysis,referenceMetrics]);
+  userAnalysis,markersFor(userAnalysis,manualMarkers?.user),
+  referenceAnalysis,markersFor(referenceAnalysis,manualMarkers?.reference)
+ ),[userAnalysis,referenceAnalysis,manualMarkers]);
  const codes=report.findings.map(f=>f.code);
  const selected=useMemo(()=>planFor(codes).filter(t=>t.tier===tier),[codes.join('|'),tier]);
  const my=records.filter(r=>r.student===id);
