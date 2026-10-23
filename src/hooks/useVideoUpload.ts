@@ -28,11 +28,11 @@ export function useVideoUpload() {
 
   const validateFile = useCallback((file: File): string | null => {
     if (!ACCEPTED_FORMATS.includes(file.type)) {
-      return 'Please upload a video file (MP4, MOV, WEBM, or AVI)';
+      return '请选择 MP4、MOV、WEBM 或 AVI 视频文件';
     }
     
     if (file.size > MAX_FILE_SIZE) {
-      return `File size must be less than ${Math.round(MAX_FILE_SIZE / (1024 * 1024))}MB`;
+      return `视频文件不得超过 ${Math.round(MAX_FILE_SIZE / (1024 * 1024))}MB`;
     }
     
     return null;
@@ -82,7 +82,7 @@ export function useVideoUpload() {
 
       return videoFile;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+      const errorMessage = error instanceof Error ? error.message : '视频读取失败';
       setUploadState({
         isUploading: false,
         progress: 0,
@@ -139,7 +139,7 @@ function getVideoDuration(url: string): Promise<number> {
     };
     
     video.onerror = () => {
-      reject(new Error('Could not load video metadata'));
+      reject(new Error('无法读取视频信息，请尝试 MP4 或 WEBM 文件'));
     };
     
     video.src = url;
