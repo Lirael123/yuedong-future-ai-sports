@@ -42,6 +42,15 @@ export default function YuedongDashboard(){
   referenceAnalysis,markersFor(referenceAnalysis,manualMarkers?.reference)
  ),[userAnalysis,referenceAnalysis,manualMarkers]);
  const codes=report.findings.map(f=>f.code);
+ const evidenceText=report.status==='ready' ? [
+   '以下是侧面视频的试验性膝角估算，不是正式运动成绩。',
+   ...phaseOrder.map(p=>report.phases[p]?.knee!==undefined ?
+     phaseNames[p]+': '+report.phases[p]!.knee.toFixed(1)+'度' : phaseNames[p]+': 无有效数据'),
+   '动作提醒代码：'+(codes.length?codes.join(','):'无显著差异提醒'),
+   '请勿仅凭角度判定动作是否标准。'
+ ].join('；'):'';
+ const analysisState=userAnalysis?.isComplete?(report.status==='ready'?'ready':'insufficient'):'not_analyzed';
+
  const selected=useMemo(()=>planFor(codes).filter(t=>t.tier===tier),[codes.join('|'),tier]);
  const my=records.filter(r=>r.student===id);
  const history=numericBars(my);
@@ -154,7 +163,7 @@ export default function YuedongDashboard(){
        {message && <p role="status" className="text-sm text-emerald-200">{message}</p>}
      </div>
    </section>
-   <CoachPanel issueCodes={codes}/>
+   <CoachPanel issueCodes={codes} analysisState={analysisState} evidenceText={evidenceText}/>
    <section className={card+' p-4 space-y-4'} aria-label="成长档案">
      <div className="flex justify-between items-start gap-2">
        <div><h3 className="font-semibold text-lg">04 · 运动成长档案</h3><p className="text-xs text-slate-400 mt-1">编号 {id} · 保存在当前浏览器</p></div>
