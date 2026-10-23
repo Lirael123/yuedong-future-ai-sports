@@ -266,7 +266,7 @@ function App() {
         <section aria-label="视频分析状态" className="mx-4 mb-5 p-4 rounded-xl border border-emerald-200 bg-emerald-50/70 flex flex-col md:flex-row md:items-center gap-3">
           <div className="flex-1">
             <p className="font-semibold text-slate-900">动作分析进度</p>
-            <p className="text-sm text-slate-700 mt-1" role="status">${statusText}</p>
+            <p className="text-sm text-slate-700 mt-1" role="status">{statusText}</p>
             {isAnalyzing && <div className="w-full h-2 rounded-full bg-slate-200 mt-2 overflow-hidden"><div className="h-full bg-emerald-600 transition-all" style={{width:analysisProgress+'%'}}/></div>}
             {analysisError && <p role="alert" className="text-sm text-red-700 mt-1">{analysisError}</p>}
           </div>
@@ -275,6 +275,7 @@ function App() {
             className="rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white px-5 py-3 font-semibold disabled:opacity-50">
             {getMainActionText()}
           </button>
+          {stage==="ready" && <button type="button" onClick={()=>document.getElementById("jump-diagnosis")?.scrollIntoView({behavior:"smooth",block:"start"})} className="px-4 py-3 rounded-lg border border-emerald-400 bg-white text-emerald-800 font-semibold">查看诊断报告 ↓</button>}
         </section>
 
         {/* Display Mode Toggle */}
