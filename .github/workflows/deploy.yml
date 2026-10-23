@@ -29,6 +29,8 @@ jobs:
         run: npm run type-check
       - name: Yuedong logic tests
         run: npm run test:yuedong
+      - name: Coze gateway contract tests
+        run: npm run test:coze
       - name: Generate fixed authored reference video
         run: |
           python3 -m pip install --quiet pillow imageio-ffmpeg
