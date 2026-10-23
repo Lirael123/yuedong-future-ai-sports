@@ -1,5 +1,6 @@
 import {useMemo,useState} from 'react';
 import {useAnalysisStore} from '../../store/analysisStore';
+import CoachPanel from './CoachPanel';
 import {analyzeLongJump,planFor,cleanId,loadRecords,parseCentimeters,toCsv,RECORDS_KEY,
  type Phase,type Tier,type RecordEntry,type Report} from '../../logic/yuedong';
 
@@ -143,9 +144,10 @@ export default function YuedongDashboard(){
        {message && <p role="status" className="text-sm text-emerald-200">{message}</p>}
      </div>
    </section>
+   <CoachPanel issueCodes={codes}/>
    <section className={card+' p-4 space-y-4'} aria-label="成长档案">
      <div className="flex justify-between items-start gap-2">
-       <div><h3 className="font-semibold text-lg">03 · 运动成长档案</h3><p className="text-xs text-slate-400 mt-1">编号 {id} · 保存在当前浏览器</p></div>
+       <div><h3 className="font-semibold text-lg">04 · 运动成长档案</h3><p className="text-xs text-slate-400 mt-1">编号 {id} · 保存在当前浏览器</p></div>
        <button onClick={exportRecords} disabled={!my.length} className={button+' border border-slate-600 disabled:opacity-40'}>导出 CSV</button>
      </div>
      <div className="grid grid-cols-3 gap-2 text-center">
