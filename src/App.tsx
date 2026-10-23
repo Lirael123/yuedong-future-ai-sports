@@ -7,7 +7,7 @@ import DisplayModeToggle from './components/Video/DisplayModeToggle'
 import FrameMarkingWizard from './components/Analysis/FrameMarkingWizard'
 import TimelineWithMarkers from './components/Analysis/TimelineWithMarkers'
 import TabNavigation from './components/Analysis/TabNavigation'
-import MetricsOverview from './components/Analysis/MetricsOverview'
+import YuedongDashboard from './components/Analysis/YuedongDashboard'
 import AngleChart from './components/Analysis/AngleChart'
 import { VideoFile } from './hooks/useVideoUpload'
 import { useAnalysisStore, ManualMarkers } from './store/analysisStore'
@@ -232,13 +232,13 @@ function App() {
   }
 
   const getMainActionText = () => {
-    if (isAnalyzing) return `ANALYZING... ${analysisProgress}%`
-    if (isExporting) return 'EXPORTING...'
-    if (hasValidAnalysis()) return 'SHARE'
-    if (canAnalyze) return 'ANALYZE'
-    if (canStartWizard) return 'MARK JUMP FRAMES'
-    if (!hasVideos) return 'UPLOAD VIDEOS FIRST'
-    return 'COMPLETE SETUP'
+    if (isAnalyzing) return `视频分析中... ${analysisProgress}%`
+    if (isExporting) return '视频导出中...'
+    if (hasValidAnalysis()) return '导出分析视频'
+    if (canAnalyze) return '开始动作分析'
+    if (canStartWizard) return '标记起跳与落地'
+    if (!hasVideos) return '请先上传示范和练习视频'
+    return '请先完成关键帧标记'
   }
 
   const handleMainAction = () => {
@@ -277,14 +277,14 @@ function App() {
         {/* Video Section - Responsive height for better use of space */}
         <div className="flex-none h-[340px] ipad:h-[500px] desktop:h-[480px] p-3 ipad:p-4 desktop:p-5 flex gap-2 ipad:gap-3">
           <VideoContainer
-            label="Reference"
+            label="标准示范"
             type="reference"
             onVideoUploaded={handleReferenceVideoUpload}
             onVideoRemoved={handleVideoRemoved}
             onSampleVideoLoading={setIsLoadingSampleVideos}
           />
           <VideoContainer
-            label="Your Jump"
+            label="学生立定跳远"
             type="user"
             onVideoUploaded={handleUserVideoUpload}
             onVideoRemoved={handleVideoRemoved}
@@ -314,28 +314,20 @@ function App() {
         {/* Content Area - Scrollable */}
         <div className="flex-1 px-4 pb-4 overflow-y-auto">
           {activeTab === 'overview' ? (
-            <MetricsOverview />
+            <YuedongDashboard />
           ) : (
             <div className="space-y-4">
               {referenceAnalysis && userAnalysis && (
                 <>
+
+
                   <AngleChart
-                    title="Shoulder Rotation"
-                    selectedPlane="transverse"
-                    className="h-48"
-                  />
-                  <AngleChart
-                    title="Shoulder Cumulative Rotation"
-                    selectedPlane="transverse"
-                    className="h-48"
-                  />
-                  <AngleChart
-                    title="Left Knee Flexion"
+                    title="左膝角变化"
                     selectedPlane="sagittal"
                     className="h-48"
                   />
                   <AngleChart
-                    title="Right Knee Flexion"
+                    title="右膝角变化"
                     selectedPlane="sagittal"
                     className="h-48"
                   />
