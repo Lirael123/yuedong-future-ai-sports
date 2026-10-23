@@ -17,7 +17,7 @@ export default function TabNavigation({ activeTab, onTabChange, visible }: TabNa
             : 'bg-white bg-opacity-5 text-gray-400 border border-white border-opacity-10 hover:bg-opacity-10'
         }`}
       >
-        Overview
+        诊断与学练
       </button>
       <button
         onClick={() => onTabChange('details')}
@@ -27,7 +27,7 @@ export default function TabNavigation({ activeTab, onTabChange, visible }: TabNa
             : 'bg-white bg-opacity-5 text-gray-400 border border-white border-opacity-10 hover:bg-opacity-10'
         }`}
       >
-        Details
+        动作角度曲线
       </button>
     </div>
   );
