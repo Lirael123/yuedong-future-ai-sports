@@ -40,7 +40,7 @@ export default function StandardDemo(){
       </div>
     )}
    </div>
-   <p className="text-xs text-slate-500 mt-3">教学视频在本站直接播放；如播放受地区或站外限制，可点击“在哔哩哔哩观看”。动作诊断使用独立的可分析参考视频与学生视频。</p>
+   <p className="text-xs text-slate-500 mt-3">教学视频在本站直接播放；如播放受地区或站外限制，可点击“在哔哩哔哩观看”。上方固定动作示意为算法参考模板，无须另选标准视频；学生视频由本人上传分析。</p>
   </section>
  )
 }
