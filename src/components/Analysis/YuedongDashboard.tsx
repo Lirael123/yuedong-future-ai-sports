@@ -73,8 +73,8 @@ export default function YuedongDashboard(){
    <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-5 space-y-2">
      <p className="text-xs tracking-[0.2em] font-semibold text-emerald-300">立定跳远 · AI教学辅助</p>
      <h2 className="text-xl md:text-2xl font-semibold">跃动未来 · 立定跳远精准学练</h2>
-     <p className="text-sm text-slate-300">标准示范 → 学生动作 → 关键帧对齐 → 姿态反馈 → 分层训练 → 成长记录</p>
-     <p className="text-xs text-slate-400">系统通过人体姿态关键点辅助分析动作。建议使用经授权拍摄的完整侧面视频，保持对比机位一致。</p>
+     <p className="text-sm text-slate-300">固定参考 → 学生动作 → 关键帧对齐 → 姿态反馈 → 分层训练 → 成长记录</p>
+     <p className="text-xs text-slate-400">系统使用固定动作示意模板辅助对比学生姿态关键点。请使用经授权拍摄、全身入镜的侧面视频。</p>
    </div>
    <StandardDemo />
    <section className={card+' p-4 space-y-3'} aria-label="动作诊断">

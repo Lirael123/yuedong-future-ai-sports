@@ -33,7 +33,7 @@ export default function VideoContainer({
   // Restore video state from global store when component mounts
   useEffect(() => {
     const storedVideo = type === 'reference' ? referenceVideo : userVideo;
-    if (storedVideo && !video) {
+    if (storedVideo && (!video || (type === 'reference' && video.url !== storedVideo.url))) {
       // Restore the video state from the store
       restoreVideo({
         file: null, // We don't have the original file, but we have the URL
@@ -157,7 +157,7 @@ export default function VideoContainer({
     : 'border-gray-700 hover:border-gray-600';
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="h-full min-h-0 flex flex-col">
       {/* Header with label and controls */}
       <div className="flex items-center justify-between mb-2 px-1">
         <div className={`${labelColors[type]} px-3 py-1 ipad:px-4 ipad:py-2 rounded-full text-xs ipad:text-sm font-semibold text-white shadow-lg`}>

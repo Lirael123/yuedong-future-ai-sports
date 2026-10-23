@@ -13,17 +13,11 @@ body {
 /* Mobile/Tablet styles */
 @media (max-width: 1023px) {
   body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+    display: block;
+    padding: 0;
   }
   
-  #root {
-    width: 100%;
-    max-width: 390px;
-    margin: 0 auto;
-  }
+  #root { width:100%; max-width:none; margin:0; }
 }
 
 /* Desktop styles */
@@ -35,7 +29,8 @@ body {
   
   #root {
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
+    height: auto;
     margin: 0;
     max-width: none;
   }
@@ -211,3 +206,12 @@ body { background: #f5f8fc !important; color: #0f172a; }
 .theme-light [class*="bg-gradient-to-r"][class*="from-blue-"] {
  color: #ffffff !important;
 }
+
+/* Natural full-page flow: the upload panels and analysis controls are not fixed. */
+html,body,#root{height:auto!important;min-height:100%;overflow-y:auto!important;}
+.theme-light header,.theme-light .reference-header {color:#fff;}
+.theme-light .site-heading span,.theme-light .site-heading p{color:inherit!important;}
+
+.theme-light .site-topbar .text-white { color:#ffffff!important; }
+.theme-light .site-topbar .text-emerald-200 { color:#b8f5d5!important; }
+.theme-light .site-topbar .text-slate-300 { color:#cbd5e1!important; }

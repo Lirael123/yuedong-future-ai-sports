@@ -2,6 +2,7 @@ import { poseDetector } from './mediapipe/poseDetector';
 import { useAnalysisStore } from '../store/analysisStore';
 import { jumpMetricsService } from './jumpMetricsService';
 import { angleAnalysisService } from './angleAnalysisService';
+import {isFixedReferenceUrl,createStandardAnalysis} from './standardReference';
 
 export class VideoAnalysisService {
   private isAnalyzing = false;
@@ -190,8 +191,17 @@ export class VideoAnalysisService {
     try {
       store.startAnalysis();
       
-      // Analyze first video (reference)
-      await this.analyzeVideo(referenceVideo, 'reference', fps);
+      // Standard animation uses creator-marked skeletal motion; do not run MediaPipe on drawings.
+      if (isFixedReferenceUrl(useAnalysisStore.getState().referenceVideo?.url)) {
+        const template = createStandardAnalysis(fps);
+        store.initializeVideoAnalysis('reference', template.duration, fps);
+        template.frames.forEach((f,i) => {
+          store.updateFrameAnalysisWithTimestamp('reference',i,f.landmarks,f.timestamp,f.worldLandmarks);
+        });
+        store.completeAnalysis('reference');
+      } else {
+        await this.analyzeVideo(referenceVideo, 'reference', fps);
+      }
       // Progress will be automatically updated by getAnalysisProgress() during frame processing
       
       // Check if analysis was aborted
