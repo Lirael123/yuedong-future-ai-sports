@@ -48,7 +48,7 @@ export default function CoachPanel({issueCodes,analysisState,evidenceText}:Props
     className="block w-full mt-1 rounded-xl bg-white border border-slate-300 p-3 text-slate-900 placeholder:text-slate-500"/>
   </label>
   <div className="flex flex-wrap justify-between items-center gap-2">
-   <span className="text-xs text-slate-500">不发送学生姓名、原始视频、学号或人脸数据；建议须由体育教师核对。</span>
+   <span className="text-xs text-slate-500">系统不主动上传视频、学号或身份信息；提问时请不要填写姓名等个人信息。建议须由教师核对。</span>
    <button type="button" onClick={submit} disabled={busy||!question.trim()}
     className="rounded-lg bg-emerald-700 px-4 py-2 font-semibold text-sm text-white hover:bg-emerald-600 disabled:opacity-50">
     {busy?'正在生成建议…':'获取训练建议'}
