@@ -139,3 +139,69 @@ input[type="range"].slider::-moz-range-thumb {
 }
 
 
+
+
+/* 跃动未来 V1.1：明亮教学主题。保留视频画面与播放控件自己的深色背景。 */
+body { background: #f5f8fc !important; color: #0f172a; }
+@media (max-width: 1023px) {
+  body { background: #f5f8fc !important; }
+}
+@media (min-width: 1024px) {
+  body { background: #ffffff !important; }
+}
+@media (max-width: 430px) {
+  body { background: #ffffff !important; }
+}
+.theme-light { background: #ffffff; color: #0f172a; }
+.theme-light [class~="bg-gray-800"],
+.theme-light [class~="bg-gray-900"],
+.theme-light [class~="bg-slate-900"],
+.theme-light [class~="bg-slate-900/90"],
+.theme-light [class~="bg-slate-950/50"] {
+  background-color: #f8fafc !important;
+}
+.theme-light [class~="bg-gray-700"] { background-color: #eef2f7 !important; }
+.theme-light [class~="bg-emerald-950/60"],
+.theme-light [class~="bg-emerald-950/50"],
+.theme-light [class~="bg-amber-950/40"] { background-color: #f0fdf4 !important; }
+.theme-light [class*="from-gray-800"],
+.theme-light [class*="from-slate-900"] {
+  background-image: linear-gradient(135deg, #f8fafc 0%, #effbf5 100%) !important;
+}
+.theme-light .text-white,
+.theme-light .text-slate-100,
+.theme-light .text-slate-200 { color: #102237 !important; }
+.theme-light .text-slate-300,
+.theme-light .text-gray-300 { color: #334155 !important; }
+.theme-light .text-slate-400,
+.theme-light .text-gray-400 { color: #64748b !important; }
+.theme-light .text-emerald-300,
+.theme-light .text-emerald-400 { color: #047857 !important; }
+.theme-light .text-amber-200,
+.theme-light .text-amber-300 { color: #92400e !important; }
+.theme-light [class~="border-slate-700"],
+.theme-light [class~="border-slate-600"],
+.theme-light [class~="border-gray-700"],
+.theme-light [class~="border-gray-800"],
+.theme-light [class~="border-emerald-800/60"] {
+  border-color: #dae4ee !important;
+}
+.theme-light [class~="border-amber-900"],
+.theme-light [class~="border-amber-900/70"] { border-color: #fde68a !important; }
+.theme-light input:not([type="checkbox"]):not([type="range"]):not([type="file"]),
+.theme-light textarea { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+.theme-light input::placeholder,.theme-light textarea::placeholder { color:#64748b !important; }
+.theme-light button[class*="bg-emerald-6"],
+.theme-light button[class*="bg-emerald-7"],
+.theme-light button[class*="from-ice-blue"],
+.theme-light button[class*="from-red-"],
+.theme-light button[class*="from-blue-"],
+.theme-light button[class*="from-emerald-"] { color: #ffffff !important; }
+.theme-light button[aria-selected="true"],
+.theme-light button[aria-pressed="true"] { color: #ffffff !important; }
+.theme-light .bg-white { background-color:#ffffff; }
+.theme-light iframe { background:#0f172a; }
+.theme-light input:focus-visible,.theme-light button:focus-visible,
+.theme-light a:focus-visible,.theme-light textarea:focus-visible {
+ outline:2px solid #10b981; outline-offset:2px;
+}
