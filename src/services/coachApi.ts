@@ -14,11 +14,11 @@ export function localCoach(context:CoachContext):CoachResult {
  if(relevant.length){
   const summary=relevant.map(code=>knowledge[code].name).join('、');
   const practice=relevant.map(code=>knowledge[code].practice).join('\n');
-  return {source:'local',reply:'根据当前视频的试验性诊断，可能需要关注：'+summary+'。\n'+practice+'\n建议每次先抓住一项动作重点，完成练习后在相同机位复测。此回复由本地规则库生成，并非 Coze 模型推理；最终需体育教师复核。'};
+  return {source:'local',reply:'根据当前视频的试验性诊断，可能需要关注：'+summary+'。\n'+practice+'\n建议每次先抓住一项动作重点，完成练习后在相同机位复测。训练建议由动作规则匹配生成，需体育教师复核。'};
  }
- if(/落地|膝盖|缓冲|摔/.test(q))return {source:'local',reply:'落地要尽量双脚同时着地、屈膝缓冲并保持稳定。若膝踝不适，请停止跳跃并告知老师。这是本地教学规则建议。'};
- if(/摆臂|起跳|蹬伸/.test(q))return {source:'local',reply:'预摆与蹬伸应协调连续；可以先用慢速分解动作感受摆臂、屈膝和向前上方伸展。请老师结合动作录像指出重点。这是本地教学规则建议。'};
- return {source:'local',reply:'建议先上传侧面完整的立定跳远视频，并对照“预摆—蹬伸—腾空—落地”四阶段观察动作；可在分层练习区选择符合当前能力的任务。这里使用本地教学规则，未连接 Coze 智能体。'};
+ if(/落地|膝盖|缓冲|摔/.test(q))return {source:'local',reply:'落地要尽量双脚同时着地、屈膝缓冲并保持稳定。若膝踝不适，请停止跳跃并告知老师。练习时注意安全，必要时请体育教师指导。'};
+ if(/摆臂|起跳|蹬伸/.test(q))return {source:'local',reply:'预摆与蹬伸应协调连续；可以先用慢速分解动作感受摆臂、屈膝和向前上方伸展。请老师结合动作录像指出重点。练习时注意安全，必要时请体育教师指导。'};
+ return {source:'local',reply:'建议先上传侧面完整的立定跳远视频，并对照“预摆—蹬伸—腾空—落地”四阶段观察动作；可在分层练习区选择符合当前能力的任务。可结合教师观察结果选择练习任务。'};
 }
 export async function askCoach(context:CoachContext):Promise<CoachResult> {
  const question=context.question.trim().slice(0,LIMIT);
