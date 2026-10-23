@@ -143,7 +143,7 @@ export default function AngleChart({ title, selectedPlane, className = '' }: Ang
     const height = rect.height;
 
     // Clear canvas
-    ctx.fillStyle = '#374151'; // gray-700
+    ctx.fillStyle = '#FFFFFF'; // 明亮教学主题
     ctx.fillRect(0, 0, width, height);
 
     // Get real angle data or fallback to mock data
@@ -210,7 +210,7 @@ export default function AngleChart({ title, selectedPlane, className = '' }: Ang
     };
 
     // Draw grid lines
-    ctx.strokeStyle = '#4B5563'; // gray-600
+    ctx.strokeStyle = '#E2E8F0'; // 明亮网格
     ctx.lineWidth = 1;
     ctx.setLineDash([2, 2]);
     
@@ -270,7 +270,7 @@ export default function AngleChart({ title, selectedPlane, className = '' }: Ang
     // Reference legend
     ctx.fillStyle = '#A855F7';
     ctx.fillRect(padding, padding - 15, 10, 2);
-    ctx.fillStyle = '#D1D5DB'; // gray-300
+    ctx.fillStyle = '#334155'; // 可读图例
     ctx.fillText('标准示范', padding + 15, padding - 8);
     
     // User legend
