@@ -211,3 +211,7 @@ body { background: #f5f8fc !important; color: #0f172a; }
 html,body,#root{height:auto!important;min-height:100%;overflow-y:auto!important;}
 .theme-light header,.theme-light .reference-header {color:#fff;}
 .theme-light .site-heading span,.theme-light .site-heading p{color:inherit!important;}
+
+.theme-light .site-topbar .text-white { color:#ffffff!important; }
+.theme-light .site-topbar .text-emerald-200 { color:#b8f5d5!important; }
+.theme-light .site-topbar .text-slate-300 { color:#cbd5e1!important; }
