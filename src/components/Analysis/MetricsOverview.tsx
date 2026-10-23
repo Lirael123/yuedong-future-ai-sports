@@ -12,8 +12,8 @@ export default function MetricsOverview() {
     ? userMetrics.rotations - referenceMetrics.rotations 
     : null;
   
-  const heightDiff = (userMetrics?.maxHeight && referenceMetrics?.maxHeight) 
-    ? userMetrics.maxHeight - referenceMetrics.maxHeight 
+  const heightDiff = (userMetrics?.max高度（旧模块） && referenceMetrics?.max高度（旧模块）) 
+    ? userMetrics.max高度（旧模块） - referenceMetrics.max高度（旧模块） 
     : null;
 
   const formatTime = (time: number | null) => {
@@ -21,12 +21,12 @@ export default function MetricsOverview() {
     return `${time.toFixed(2)}s`;
   };
 
-  const formatRotations = (rotations: number | null) => {
+  const format旋转圈数（旧模块） = (rotations: number | null) => {
     if (rotations === null) return '--';
     return rotations.toFixed(1);
   };
 
-  const formatHeight = (height: number | null) => {
+  const format高度（旧模块） = (height: number | null) => {
     if (height === null) return '--';
     return `${(height * 100).toFixed(0)}cm`; // Convert meters to cm
   };
@@ -51,19 +51,19 @@ export default function MetricsOverview() {
       <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-4 border border-gray-700">
         <div className="flex items-center gap-2 mb-4">
           <span className="text-xl">📊</span>
-          <span className="text-white text-base font-semibold">Jump Analysis</span>
+          <span className="text-white text-base font-semibold">动作分析</span>
         </div>
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-black bg-opacity-40 rounded-xl p-3 text-center">
-            <div className="text-gray-400 text-xs mb-1">AIR TIME</div>
+            <div className="text-gray-400 text-xs mb-1">腾空时间</div>
             <div className="text-white text-2xl font-bold">--</div>
           </div>
           <div className="bg-black bg-opacity-40 rounded-xl p-3 text-center">
-            <div className="text-gray-400 text-xs mb-1">ROTATIONS</div>
+            <div className="text-gray-400 text-xs mb-1">旋转圈数（旧模块）</div>
             <div className="text-white text-2xl font-bold">--</div>
           </div>
           <div className="bg-black bg-opacity-40 rounded-xl p-3 text-center">
-            <div className="text-gray-400 text-xs mb-1">HEIGHT</div>
+            <div className="text-gray-400 text-xs mb-1">高度（旧模块）</div>
             <div className="text-white text-2xl font-bold">--</div>
           </div>
         </div>
@@ -75,13 +75,13 @@ export default function MetricsOverview() {
     <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-4 border border-gray-700">
       <div className="flex items-center gap-2 mb-4">
         <span className="text-xl">📊</span>
-        <span className="text-white text-base font-semibold">Jump Analysis</span>
+        <span className="text-white text-base font-semibold">动作分析</span>
       </div>
       
       <div className="grid grid-cols-3 gap-3">
-        {/* Air Time */}
+        {/* 腾空时间 */}
         <div className="bg-black bg-opacity-40 rounded-xl p-3 text-center">
-          <div className="text-gray-400 text-xs mb-1">Air Time</div>
+          <div className="text-gray-400 text-xs mb-1">腾空时间</div>
           <div className="text-white text-xl font-bold">
             {formatTime(userMetrics.airTime)}
           </div>
@@ -92,11 +92,11 @@ export default function MetricsOverview() {
           )}
         </div>
 
-        {/* Rotations */}
+        {/* 旋转圈数（旧模块） */}
         <div className="bg-black bg-opacity-40 rounded-xl p-3 text-center">
-          <div className="text-gray-400 text-xs mb-1">Rotations</div>
+          <div className="text-gray-400 text-xs mb-1">旋转圈数（旧模块）</div>
           <div className="text-white text-xl font-bold">
-            {formatRotations(userMetrics.rotations)}
+            {format旋转圈数（旧模块）(userMetrics.rotations)}
           </div>
           {rotationsDiff !== null && (
             <div className={`text-xs mt-1 font-semibold ${getChangeClass(rotationsDiff)}`}>
@@ -105,11 +105,11 @@ export default function MetricsOverview() {
           )}
         </div>
 
-        {/* Height */}
+        {/* 高度（旧模块） */}
         <div className="bg-black bg-opacity-40 rounded-xl p-3 text-center">
-          <div className="text-gray-400 text-xs mb-1">Height</div>
+          <div className="text-gray-400 text-xs mb-1">高度（旧模块）</div>
           <div className="text-white text-xl font-bold">
-            {formatHeight(userMetrics.maxHeight)}
+            {format高度（旧模块）(userMetrics.max高度（旧模块）)}
           </div>
           {heightDiff !== null && (
             <div className={`text-xs mt-1 font-semibold ${getChangeClass(heightDiff)}`}>
