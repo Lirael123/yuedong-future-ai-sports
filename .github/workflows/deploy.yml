@@ -25,6 +25,10 @@ jobs:
         run: npm run type-check
       - name: Yuedong logic tests
         run: npm run test:yuedong
+      - name: Generate fixed authored reference video
+        run: |
+          python3 -m pip install --quiet pillow
+          python3 scripts/generate-standard-reference.py
       - name: Build
         run: npm run build
         env:
@@ -71,6 +75,10 @@ jobs:
         run: |
           npm install --no-save playwright@1.58.2
           npx playwright install --with-deps chromium
+      - name: Generate fixed authored reference video
+        run: |
+          python3 -m pip install --quiet pillow
+          python3 scripts/generate-standard-reference.py
       - name: Build preview
         run: npm run build
         env:
