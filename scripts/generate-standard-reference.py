@@ -58,7 +58,8 @@ def scene(t):
     d.rounded_rectangle((W-228,78,W-65,89),radius=6,fill='#e2ece9')
     d.rounded_rectangle((W-228,78,W-228+int(163*t/duration),89),radius=6,fill='#159c73')
     return im
-command=['ffmpeg','-y','-loglevel','error','-f','rawvideo','-pixel_format','rgb24',
+import imageio_ffmpeg
+command=[imageio_ffmpeg.get_ffmpeg_exe(),'-y','-loglevel','error','-f','rawvideo','-pixel_format','rgb24',
  '-video_size',str(W)+'x'+str(H),'-framerate',str(fps),'-i','pipe:0',
  '-c:v','libx264','-pix_fmt','yuv420p','-preset','fast','-crf','25','-movflags','+faststart',str(out)]
 proc=subprocess.Popen(command,stdin=subprocess.PIPE)
