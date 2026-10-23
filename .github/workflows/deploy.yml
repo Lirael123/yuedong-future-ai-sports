@@ -45,17 +45,17 @@ jobs:
         VITE_COACH_API_URL: ${{ vars.COACH_API_URL }}
         
     - name: Setup Pages
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feature/yuedong-integrated-v1')
       uses: actions/configure-pages@v4
       
     - name: Upload artifact
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feature/yuedong-integrated-v1')
       uses: actions/upload-pages-artifact@v3
       with:
         path: './dist'
         
     - name: Deploy to GitHub Pages
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feature/yuedong-integrated-v1')
       id: deployment
       uses: actions/deploy-pages@v4
   smoke-browser:
