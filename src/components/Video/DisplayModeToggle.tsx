@@ -55,7 +55,7 @@ export default function DisplayModeToggle({ className = '' }: DisplayModeToggleP
           }
         `}
       >
-        Video
+        原始视频
       </button>
       <button
         onClick={() => handleToggle('pose')}
@@ -67,7 +67,7 @@ export default function DisplayModeToggle({ className = '' }: DisplayModeToggleP
           }
         `}
       >
-        Pose
+        骨架标注
       </button>
     </div>
   );
