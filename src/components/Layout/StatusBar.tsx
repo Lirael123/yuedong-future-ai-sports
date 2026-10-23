@@ -1,21 +1,10 @@
 export default function StatusBar() {
   return (
-    <div className="h-14 bg-gradient-to-b from-gray-800 to-gray-900 flex items-center justify-center border-b border-gray-700">
-      <div className="flex items-center gap-3">
-        <img
-          src={`${import.meta.env.BASE_URL}Logo1.png`}
-          alt="Feedback Loop Logo"
-          className="h-10 w-10 object-contain rounded-full"
-        />
-        <div className="flex items-baseline gap-1">
-          <span className="text-ice-blue-600 font-bold text-base tracking-wide">
-            FEEDBACK
-          </span>
-          <span className="text-ice-blue-200 font-bold text-base tracking-wide">
-            LOOP
-          </span>
-        </div>
+    <div className="min-h-16 bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-950 flex justify-center items-center border-b border-emerald-800/60 px-4 py-3">
+      <div className="text-center">
+        <div className="font-semibold tracking-wide text-emerald-200 text-lg">跃动未来 <span className="text-white">· AI立定跳远教学诊断</span></div>
+        <p className="text-xs text-slate-400 mt-1">真实姿态关键点 · 分层学练 · 运动成长档案</p>
       </div>
     </div>
-  );
+  )
 }
