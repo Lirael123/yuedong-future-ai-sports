@@ -7,57 +7,51 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    
     permissions:
       contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Type check
+        run: npm run type-check
+      - name: Yuedong logic tests
+        run: npm run test:yuedong
+      - name: Build
+        run: npm run build
+        env:
+          NODE_ENV: production
+          VITE_COACH_API_URL: ${{ vars.COACH_API_URL }}
+      - name: Upload pages artifact
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
       pages: write
       id-token: write
-    
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Type check
-      run: npm run type-check
-      
-    - name: Yuedong logic tests
-      run: npm run test:yuedong
-
-    - name: Build
-      run: npm run build
-      env:
-        NODE_ENV: production
-        VITE_COACH_API_URL: ${{ vars.COACH_API_URL }}
-        
-    - name: Setup Pages
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      uses: actions/configure-pages@v4
-      
-    - name: Upload artifact
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: './dist'
-        
-    - name: Deploy to GitHub Pages
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
   smoke-browser:
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/feature/yuedong-integrated-v1'
     runs-on: ubuntu-latest
