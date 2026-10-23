@@ -19,7 +19,7 @@ async function main(){
  page.on('console',msg=>{if(msg.type()==='error'&& !/favicon|Bilibili|bilibili/i.test(msg.text()))errors.push(msg.text().slice(0,300))});
  const timeout=180000;
  try{
-  const base='http://127.0.0.1:4173/yuedong-future-ai-sports/';
+  const base=process.env.YUEDONG_BASE_URL||'http://127.0.0.1:4173/yuedong-future-ai-sports/';
   const navigation=await page.goto(base,{waitUntil:'domcontentloaded',timeout:30000});
   assert.equal(navigation.status(),200);
   report.checks.page=true;

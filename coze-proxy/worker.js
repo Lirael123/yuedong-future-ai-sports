@@ -9,6 +9,22 @@ const STATES = new Set(['ready','insufficient','not_analyzed']);
 const CODE_RE = /^SLJ-0[1-4]$/;
 const MAX_BODY = 4096;
 
+function configuredOrigins(env) {
+  // ALLOWED_ORIGIN remains supported for existing GitHub Pages deployments.
+  const configured = String(env.ALLOWED_ORIGINS || env.ALLOWED_ORIGIN || '').trim();
+  if (!configured) return new Set();
+  const origins = configured.split(',').map(value => value.trim().replace(/\/$/, ''));
+  try {
+    for (const origin of origins) {
+      const parsed = new URL(origin);
+      if (parsed.protocol !== 'https:' || parsed.origin !== origin) return new Set();
+    }
+    return new Set(origins);
+  } catch {
+    return new Set();
+  }
+}
+
 function corsHeaders(origin) {
   return {
     'Content-Type': 'application/json; charset=utf-8',
@@ -61,8 +77,8 @@ function normalize(raw) {
 export default {
   async fetch(request,env) {
     const origin=request.headers.get('Origin')||'';
-    const allowed=String(env.ALLOWED_ORIGIN||'').replace(/\/$/,'');
-    if(!allowed||origin!==allowed)return json({error:'访问来源未授权。'},403,allowed||'null');
+    if(!configuredOrigins(env).has(origin))return json({error:'访问来源未授权。'},403,'null');
+    const allowed=origin;
     const pathname=new URL(request.url).pathname;
     if(request.method==='OPTIONS'){
       if(pathname!=='/coach'&&pathname!=='/health')return json({error:'接口不存在。'},404,allowed);

@@ -4,12 +4,12 @@
   "description": "AI-assisted standing long jump learning and progress tracking",
   "icons": [
     {
-      "src": "/android-chrome-192x192.png",
+      "src": "android-chrome-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/android-chrome-512x512.png",
+      "src": "android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
@@ -17,8 +17,8 @@
   "theme_color": "#064e3b",
   "background_color": "#1f2937",
   "display": "standalone",
-  "scope": "/yuedong-future-ai-sports/",
-  "start_url": "/yuedong-future-ai-sports/",
+  "scope": "./",
+  "start_url": "./",
   "orientation": "portrait-primary",
   "categories": ["sports", "education", "productivity"]
 }
