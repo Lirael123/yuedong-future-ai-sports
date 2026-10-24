@@ -16,7 +16,7 @@ function upstream(env,parameters) {
     try {url=new URL(codingUrl)} catch {throw new Error('工作流地址配置错误。')}
     if(url.protocol!=='https:'||!url.hostname.endsWith('.coze.site')||url.username||url.password||url.search||url.hash||url.pathname!=='/run')
       throw new Error('工作流地址配置错误。');
-    const token=env.COZE_WORKLOAD_API_TOKEN||env.COZE_API_TOKEN;
+    const token=env.COZE_API_TOKEN||env.COZE_WORKLOAD_API_TOKEN;
     if(!token)throw new Error('Coze 工作流尚未配置。');
     return {url:url.href,token,body:parameters,coding:true};
   }

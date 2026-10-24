@@ -119,6 +119,20 @@ test('Coding workflow needs a server token and a trusted /run URL',async()=>{
  const r=await worker.fetch(request(context),{ALLOWED_ORIGIN:ORIGIN,COZE_CODING_WORKFLOW_URL:'https://y26823vr3w.coze.site/run'});
  assert.equal(r.status,503);
 });
+test('explicit production secret takes precedence over a sandbox identity',async()=>{
+ const original=globalThis.fetch;
+ globalThis.fetch=async(_url,options)=>{
+  assert.equal(options.headers.Authorization,'Bearer test-production-secret');
+  return new Response(JSON.stringify({answer:'请由教师复核。'}),{status:200});
+ };
+ try{
+  const r=await worker.fetch(request(context),{
+   ALLOWED_ORIGIN:ORIGIN,COZE_CODING_WORKFLOW_URL:'https://y26823vr3w.coze.site/run',
+   COZE_WORKLOAD_API_TOKEN:'test-sandbox-identity',COZE_API_TOKEN:'test-production-secret'
+  });
+  assert.equal(r.status,200);
+ }finally{globalThis.fetch=original}
+});
 test('Coding workflow gateway errors never become a fabricated reply',async()=>{
  const original=globalThis.fetch;
  globalThis.fetch=async()=>new Response(JSON.stringify({error:'unauthorized'}),{status:401});
