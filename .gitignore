@@ -138,9 +138,12 @@ test-results.xml
 # MediaPipe model files (if downloaded locally)
 models/
 *.task
+!public/mediapipe/pose_landmarker_lite.task
+public/mediapipe/runtime/
 
 # Video files (too large for git)
 *.mp4
+!public/reference/standing-long-jump-v1.mp4
 *.avi
 *.mov
 *.mkv

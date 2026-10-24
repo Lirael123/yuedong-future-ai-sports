@@ -1,0 +1,59 @@
+name: Check Coze and GitHub Pages hosting paths
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hosting:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: coze-root
+            base: /
+          - name: github-pages
+            base: /yuedong-future-ai-sports/
+    env:
+      VITE_BASE_PATH: ${{ matrix.base }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run type-check
+      - run: npm run test:yuedong
+      - run: npm run test:mediapipe
+      - run: npm run test:coze
+      - run: npm run build
+      - name: Prepare browser checks without changing the lockfile
+        run: |
+          npm install --no-save --package-lock=false playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Check deployment paths and browser workflow
+        env:
+          YUEDONG_BASE_URL: http://127.0.0.1:4173${{ matrix.base }}
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4173 --strictPort > /tmp/yuedong-preview.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do
+            if curl -fsS "$YUEDONG_BASE_URL" > /dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS "$YUEDONG_BASE_URL" > /dev/null
+          node scripts/smoke-browser.cjs
+      - name: Preserve screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hosting-${{ matrix.name }}
+          path: smoke-*.png
+          if-no-files-found: ignore

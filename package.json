@@ -4,12 +4,15 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/prepare-mediapipe.mjs",
     "dev": "vite --host 0.0.0.0",
+    "prebuild": "node scripts/prepare-mediapipe.mjs",
     "build": "tsc && vite build",
     "lint": "eslint . --max-warnings 0",
     "preview": "vite preview --host 0.0.0.0",
     "type-check": "tsc --noEmit",
     "test:yuedong": "node scripts/test-yuedong.cjs",
+    "test:mediapipe": "node --test scripts/test-mediapipe.cjs",
     "test:coze": "node --test tests/coze-proxy.test.mjs"
   },
   "dependencies": {
