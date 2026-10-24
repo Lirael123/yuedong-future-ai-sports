@@ -16,6 +16,9 @@ const knowledge:Record<string,{name:string,practice:string}>={
  'SLJ-04':{name:'落地缓冲可能不足',practice:'在防滑平整场地练习双脚落地与屈膝缓冲，保持平衡优先于距离。'}
 };
 export function localCoach(context:CoachContext):CoachResult {
+ if(/疼|痛|扭伤|受伤|头晕|眩晕|气短|呼吸困难|不适|崴/.test(context.question)){
+  return {source:'local',reply:'若正在疼痛、受伤、头晕或呼吸不适，请立即停止练习，告知体育教师和监护人，必要时寻求专业医疗评估。恢复练习时间请由教师及专业人员判断。'};
+ }
  if(context.analysisState!=='ready'){
   return {source:'local',reply:'尚无有效动作诊断。可以先学习预摆、蹬伸、腾空、落地四阶段要领，再上传全身及双脚清晰可见的侧面跳远视频进行分析。若身体不适，应停止练习并告知体育教师。'};
  }
