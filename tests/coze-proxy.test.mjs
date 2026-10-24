@@ -93,6 +93,41 @@ test('failed Coze call is error, never disguised as local AI',async()=>{
   const response=await r.json();assert.ok(response.error);assert.equal(response.reply,undefined);
  }finally{globalThis.fetch=original}
 });
+test('published Coze Coding workflow receives only five anonymous fields with server identity',async()=>{
+ const original=globalThis.fetch;
+ let outbound;
+ const env={ALLOWED_ORIGIN:ORIGIN,COZE_CODING_WORKFLOW_URL:'https://y26823vr3w.coze.site/run',COZE_WORKLOAD_API_TOKEN:'test-platform-token-not-real'};
+ globalThis.fetch=async(url,options)=>{
+  assert.equal(url,env.COZE_CODING_WORKFLOW_URL);
+  assert.equal(options.headers.Authorization,'Bearer test-platform-token-not-real');
+  outbound=JSON.parse(options.body);
+  return new Response(JSON.stringify({answer:'先由老师检查起跳与落地。',run_id:'test-run'}),{status:200});
+ };
+ try{
+  const r=await worker.fetch(request(context),env);
+  assert.equal(r.status,200);
+  assert.deepEqual(await r.json(),{reply:'先由老师检查起跳与落地。',source:'coze'});
+  assert.deepEqual(outbound,context);
+  assert.ok(!('workflow_id' in outbound)&&!('student' in outbound)&&!('video' in outbound));
+ }finally{globalThis.fetch=original}
+});
+test('Coding workflow needs a server token and a trusted /run URL',async()=>{
+ for(const url of ['http://y26823vr3w.coze.site/run','https://evil.invalid/run','https://y26823vr3w.coze.site/other']){
+  const r=await worker.fetch(request(context),{...ENV,COZE_CODING_WORKFLOW_URL:url});
+  assert.equal(r.status,503);
+ }
+ const r=await worker.fetch(request(context),{ALLOWED_ORIGIN:ORIGIN,COZE_CODING_WORKFLOW_URL:'https://y26823vr3w.coze.site/run'});
+ assert.equal(r.status,503);
+});
+test('Coding workflow gateway errors never become a fabricated reply',async()=>{
+ const original=globalThis.fetch;
+ globalThis.fetch=async()=>new Response(JSON.stringify({error:'unauthorized'}),{status:401});
+ try{
+  const r=await worker.fetch(request(context),{...ENV,COZE_CODING_WORKFLOW_URL:'https://y26823vr3w.coze.site/run'});
+  assert.equal(r.status,502);
+  assert.equal((await r.json()).reply,undefined);
+ }finally{globalThis.fetch=original}
+});
 test('large payload rejected',async()=>{
  const r=await worker.fetch(request({...context,question:'abc'.repeat(2000)}),ENV);
  assert.equal(r.status,413);

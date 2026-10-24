@@ -9,6 +9,24 @@ const STATES = new Set(['ready','insufficient','not_analyzed']);
 const CODE_RE = /^SLJ-0[1-4]$/;
 const MAX_BODY = 4096;
 
+function upstream(env,parameters) {
+  const codingUrl=String(env.COZE_CODING_WORKFLOW_URL||'').trim();
+  if(codingUrl){
+    let url;
+    try {url=new URL(codingUrl)} catch {throw new Error('工作流地址配置错误。')}
+    if(url.protocol!=='https:'||!url.hostname.endsWith('.coze.site')||url.username||url.password||url.search||url.hash||url.pathname!=='/run')
+      throw new Error('工作流地址配置错误。');
+    const token=env.COZE_WORKLOAD_API_TOKEN||env.COZE_API_TOKEN;
+    if(!token)throw new Error('Coze 工作流尚未配置。');
+    return {url:url.href,token,body:parameters,coding:true};
+  }
+  if(!env.COZE_API_TOKEN||!env.COZE_WORKFLOW_ID)throw new Error('Coze 工作流尚未配置。');
+  const body={workflow_id:String(env.COZE_WORKFLOW_ID),parameters};
+  if(env.COZE_APP_ID)body.app_id=String(env.COZE_APP_ID);
+  else if(env.COZE_BOT_ID)body.bot_id=String(env.COZE_BOT_ID);
+  return {url:COZE_URL,token:env.COZE_API_TOKEN,body,coding:false};
+}
+
 function configuredOrigins(env) {
   // ALLOWED_ORIGIN remains supported for existing GitHub Pages deployments.
   const configured = String(env.ALLOWED_ORIGINS || env.ALLOWED_ORIGIN || '').trim();
@@ -85,9 +103,10 @@ export default {
       return new Response(null,{status:204,headers:corsHeaders(allowed)});
     }
     if(pathname==='/health'&&request.method==='GET')
-      return json({status:env.COZE_API_TOKEN&&env.COZE_WORKFLOW_ID?'configured':'not_configured'},200,allowed);
+      return json({status:(env.COZE_CODING_WORKFLOW_URL&&(env.COZE_WORKLOAD_API_TOKEN||env.COZE_API_TOKEN))||(env.COZE_API_TOKEN&&env.COZE_WORKFLOW_ID)?'configured':'not_configured'},200,allowed);
     if(pathname!=='/coach'||request.method!=='POST')return json({error:'接口不存在。'},404,allowed);
-    if(!env.COZE_API_TOKEN||!env.COZE_WORKFLOW_ID)return json({error:'Coze 工作流尚未配置。'},503,allowed);
+    let target;
+    try {target=upstream(env,null)} catch(error){return json({error:error.message},503,allowed)}
     if(Number(request.headers.get('content-length')||0)>MAX_BODY)return json({error:'请求内容过长。'},413,allowed);
     let parameters;
     try{
@@ -106,21 +125,19 @@ export default {
         if(!outcome.success)return json({error:'请求过于频繁，请稍后再试。'},429,allowed);
       }catch{return json({error:'接口限流服务不可用。'},503,allowed)}
     }
-    const payload={workflow_id:String(env.COZE_WORKFLOW_ID),parameters};
-    if(env.COZE_APP_ID)payload.app_id=String(env.COZE_APP_ID);
-    else if(env.COZE_BOT_ID)payload.bot_id=String(env.COZE_BOT_ID);
+    target=upstream(env,parameters);
     const controller=new AbortController();
     const timer=setTimeout(()=>controller.abort(),28000);
     try{
-      const response=await fetch(COZE_URL,{
+      const response=await fetch(target.url,{
         method:'POST',
-        headers:{Authorization:'Bearer '+env.COZE_API_TOKEN,'Content-Type':'application/json'},
-        body:JSON.stringify(payload),signal:controller.signal
+        headers:{Authorization:'Bearer '+target.token,'Content-Type':'application/json'},
+        body:JSON.stringify(target.body),signal:controller.signal
       });
       if(!response.ok)return json({error:'Coze 请求失败，请检查工作流是否发布及令牌权限。'},502,allowed);
       const result=await response.json();
-      if(result?.code!==0)return json({error:'Coze 工作流返回错误，请查看 Coze 运行日志。'},502,allowed);
-      const reply=parseAnswer(result.data);
+      if(!target.coding&&result?.code!==0)return json({error:'Coze 工作流返回错误，请查看 Coze 运行日志。'},502,allowed);
+      const reply=parseAnswer(target.coding?result:result.data);
       if(!reply)return json({error:'Coze 工作流未返回 answer 内容，请检查结束节点。'},502,allowed);
       return json({reply:reply.slice(0,3500),source:'coze'},200,allowed);
     }catch{
